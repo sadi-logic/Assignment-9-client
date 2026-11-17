@@ -15,7 +15,18 @@ export const routes = {
   signIn: "/sign-in",
   signUp: "/sign-up",
   dashboard: "/dashboard",
+  customerDashboard: "/dashboard/customer",
+  adminDashboard: "/dashboard/admin",
 } as const;
+
+/**
+ * The dashboard a signed-in user belongs in. The role comes from the Better
+ * Auth session (server-verified), never from anything the user can edit in the
+ * browser.
+ */
+export function dashboardForRole(role?: string | null) {
+  return role === "admin" ? routes.adminDashboard : routes.customerDashboard
+}
 
 export const publicNav = [
   { label: "Home", href: routes.home },

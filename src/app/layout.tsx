@@ -3,6 +3,7 @@ import { Cormorant_Garamond, Jost } from "next/font/google"
 import "./globals.css"
 
 import { SiteHeader } from "@/components/layout/site-header"
+import { Toaster } from "@/components/ui/sonner"
 import { siteConfig } from "@/lib/site"
 
 const jost = Jost({
@@ -38,6 +39,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <div id="main-content" tabIndex={-1} className="flex flex-1 flex-col outline-none">
           {children}
         </div>
+        <Toaster position="bottom-right" closeButton />
       </body>
     </html>
   )

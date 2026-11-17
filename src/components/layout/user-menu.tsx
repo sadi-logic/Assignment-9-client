@@ -16,12 +16,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useSignOut } from "@/hooks/use-sign-out"
-import { routes } from "@/lib/site"
+import { dashboardForRole } from "@/lib/site"
 
 export type SessionUser = {
   name: string
   email: string
   image?: string | null
+  role?: string | null
+  isBlocked?: boolean | null
 }
 
 function getInitials({ name, email }: SessionUser) {
@@ -72,7 +74,7 @@ export function UserMenu({ user }: { user: SessionUser }) {
         <DropdownMenuSeparator />
 
         <DropdownMenuItem
-          render={<Link href={routes.dashboard} />}
+          render={<Link href={dashboardForRole(user.role)} />}
           className="gap-2.5 px-2.5 py-2 text-[0.8rem]"
         >
           <LayoutDashboardIcon className="text-brand-plum" />

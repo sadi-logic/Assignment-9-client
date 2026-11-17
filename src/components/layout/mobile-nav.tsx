@@ -23,7 +23,7 @@ import { Brand } from "@/components/layout/brand"
 import { isActivePath } from "@/components/layout/nav-link"
 import type { SessionUser } from "@/components/layout/user-menu"
 import { useSignOut } from "@/hooks/use-sign-out"
-import { publicNav, routes } from "@/lib/site"
+import { publicNav, dashboardForRole, routes } from "@/lib/site"
 
 type MobileNavProps = {
   user: SessionUser | null
@@ -140,7 +140,7 @@ export function MobileNav({ user, isPending }: MobileNavProps) {
 
               <div className="flex flex-col gap-2.5">
                 <Link
-                  href={routes.dashboard}
+                  href={dashboardForRole(user.role)}
                   onClick={close}
                   className={cn(
                     buttonVariants({ size: "lg" }),
