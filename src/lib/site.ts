@@ -16,7 +16,15 @@ export const routes = {
   signUp: "/sign-up",
   dashboard: "/dashboard",
   customerDashboard: "/dashboard/customer",
+  customerAppointments: "/dashboard/customer/appointments",
+  customerProfile: "/dashboard/customer/profile",
   adminDashboard: "/dashboard/admin",
+  adminServices: "/dashboard/admin/services",
+  adminServiceAdd: "/dashboard/admin/services/add",
+  adminAppointments: "/dashboard/admin/appointments",
+  adminUsers: "/dashboard/admin/users",
+  adminTransactions: "/dashboard/admin/transactions",
+  adminProfile: "/dashboard/admin/profile",
 } as const;
 
 /**

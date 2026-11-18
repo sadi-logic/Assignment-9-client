@@ -82,14 +82,16 @@
   --brand-blush: oklch(0.895 0.03 25);
   --brand-plum: oklch(0.305 0.055 344);
   --brand-cream: oklch(0.965 0.014 84);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* Sidebar shares the warm ivory / aubergine palette of the header and the
+     auth pages instead of the default neutral shadcn greys. */
+  --sidebar: oklch(0.972 0.009 83);
+  --sidebar-foreground: oklch(0.3 0.022 45);
+  --sidebar-primary: oklch(0.305 0.055 344);
+  --sidebar-primary-foreground: oklch(0.975 0.008 84);
+  --sidebar-accent: oklch(0.938 0.014 82);
+  --sidebar-accent-foreground: oklch(0.305 0.055 344);
+  --sidebar-border: oklch(0.9 0.013 80);
+  --sidebar-ring: oklch(0.6 0.07 72);
 }
 
 .dark {
