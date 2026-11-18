@@ -84,8 +84,11 @@ export function SignInForm({ googleEnabled }: { googleEnabled: boolean }) {
       toast.success(
         firstName ? `Welcome back, ${firstName}.` : "Welcome back to SalonBook."
       )
-      router.replace(dashboardForRole(data?.user?.role))
-      router.refresh()
+
+       router.refresh()
+      router.push("/")
+      // router.replace(dashboardForRole(data?.user?.role))
+      // router.refresh()
     } catch {
       const message =
         "We could not reach the server. Check your connection and try again."
@@ -137,7 +140,7 @@ export function SignInForm({ googleEnabled }: { googleEnabled: boolean }) {
             }}
             aria-invalid={Boolean(errors.email)}
             aria-describedby={errors.email ? "sign-in-email-error" : undefined}
-            className="h-11 rounded-xl border-border/80 bg-background/60 px-3.5 text-[0.95rem] focus-visible:ring-ring"
+            className="h-11 rounded-xl border-border/80 bg-background/60 px-3.5 text-[0.95rem] text-foreground focus-visible:ring-ring"
           />
         </AuthField>
 

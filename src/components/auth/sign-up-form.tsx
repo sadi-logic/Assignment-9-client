@@ -97,7 +97,9 @@ export function SignUpForm({ googleEnabled }: { googleEnabled: boolean }) {
         email: normalizeEmail(email),
         password,
         image: image.trim(),
+      
       })
+       
 
       if (error) {
         const message = getAuthErrorMessage(
@@ -107,6 +109,7 @@ export function SignUpForm({ googleEnabled }: { googleEnabled: boolean }) {
         setFormError(message)
         toast.error(message)
         return
+         
       }
 
       const firstName = data?.user?.name?.trim().split(/\s+/)[0]
@@ -116,8 +119,12 @@ export function SignUpForm({ googleEnabled }: { googleEnabled: boolean }) {
           ? `Welcome to SalonBook, ${firstName}.`
           : "Your SalonBook account is ready."
       )
-      router.replace(dashboardForRole(data?.user?.role))
-      router.refresh()
+
+       router.refresh()
+      router.push("/")
+
+      // router.replace(dashboardForRole(data?.user?.role))
+      // router.refresh()
     } catch {
       const message =
         "We could not reach the server. Check your connection and try again."
@@ -125,7 +132,9 @@ export function SignUpForm({ googleEnabled }: { googleEnabled: boolean }) {
       toast.error(message)
     } finally {
       setIsSubmitting(false)
+
     }
+    
   }
 
   return (
@@ -168,7 +177,7 @@ export function SignUpForm({ googleEnabled }: { googleEnabled: boolean }) {
             }}
             aria-invalid={Boolean(errors.name)}
             aria-describedby={errors.name ? "sign-up-name-error" : undefined}
-            className="h-11 rounded-xl border-border/80 bg-background/60 px-3.5 text-[0.95rem] focus-visible:ring-ring"
+            className="h-11 rounded-xl border-border/80 bg-background/60 px-3.5 text-[0.95rem] text-foreground focus-visible:ring-ring"
           />
         </AuthField>
 
@@ -187,7 +196,7 @@ export function SignUpForm({ googleEnabled }: { googleEnabled: boolean }) {
             }}
             aria-invalid={Boolean(errors.email)}
             aria-describedby={errors.email ? "sign-up-email-error" : undefined}
-            className="h-11 rounded-xl border-border/80 bg-background/60 px-3.5 text-[0.95rem] focus-visible:ring-ring"
+            className="h-11 rounded-xl border-border/80 bg-background/60 px-3.5 text-[0.95rem] text-foreground focus-visible:ring-ring"
           />
         </AuthField>
 
@@ -251,7 +260,7 @@ export function SignUpForm({ googleEnabled }: { googleEnabled: boolean }) {
               }}
               aria-invalid={Boolean(errors.image)}
               aria-describedby={errors.image ? "sign-up-image-error" : undefined}
-              className="h-11 rounded-xl border-border/80 bg-background/60 px-3.5 text-[0.95rem] focus-visible:ring-ring"
+              className="h-11 rounded-xl border-border/80 bg-background/60 px-3.5 text-[0.95rem] text-foreground focus-visible:ring-ring"
             />
           </div>
         </AuthField>

@@ -19,8 +19,10 @@ if (!mongoUri) {
 }
 
 const client = new MongoClient(mongoUri)
-// The database name comes from the connection string.
-const db = client.db()
+// Keep the database explicit: an Atlas URI usually carries no database path,
+// and `client.db()` would then silently use a database named "test".
+const dbName = process.env.MONGODB_DB_NAME?.trim() || "salonbookdb"
+const db = client.db(dbName)
 
 const googleClientId = process.env.GOOGLE_CLIENT_ID
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET

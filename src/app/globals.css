@@ -135,5 +135,20 @@
   }
   html {
     @apply font-sans;
+    /* SalonBook is a light-only palette. Declaring it stops forced-dark
+       browsers from repainting form controls dark-on-dark, which is the
+       classic "I typed my email and nothing appears" bug. */
+    color-scheme: light;
+  }
+
+  /* Chrome/Edge fill saved credentials with their own colours. On a dark-mode
+     profile that can mean near-white text on our ivory fields, so autofill is
+     pinned back to the SalonBook palette. */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--foreground);
+    caret-color: var(--foreground);
+    box-shadow: 0 0 0 1000px var(--background) inset;
   }
 }

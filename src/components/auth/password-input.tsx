@@ -45,7 +45,7 @@ export function PasswordInput({
         disabled={disabled}
         aria-invalid={invalid}
         aria-describedby={describedBy}
-        className="h-11 rounded-xl border-border/80 bg-background/60 pr-11 pl-3.5 text-[0.95rem] focus-visible:ring-ring disabled:bg-input/40"
+        className="h-11 rounded-xl border-border/80 bg-background/60 pr-11 pl-3.5 text-[0.95rem] text-foreground focus-visible:ring-ring disabled:bg-input/40"
       />
       <button
         type="button"
