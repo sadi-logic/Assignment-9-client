@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600" role="img" aria-label="Root Touch-Up">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3c2b2b"/>
+      <stop offset="1" stop-color="#a86f63"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#g)"/>
+  <circle cx="612" cy="138" r="210" fill="url(#glow)"/>
+  <circle cx="168" cy="486" r="236" fill="#000000" opacity="0.12"/>
+  <path d="M-20 452 Q 190 352 400 452 T 820 452" fill="none" stroke="#e8c9a0" stroke-width="2.5" opacity="0.55"/>
+  <path d="M-20 500 Q 190 400 400 500 T 820 500" fill="none" stroke="#ffffff" stroke-width="1.5" opacity="0.22"/>
+  <circle cx="400" cy="252" r="76" fill="none" stroke="#e8c9a0" stroke-width="1.5" opacity="0.45"/>
+</svg>

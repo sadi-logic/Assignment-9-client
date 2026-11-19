@@ -55,6 +55,52 @@ export interface IService {
 /** The submitted object: a document without the server-owned timestamp. */
 export type ServiceDraft = Omit<IService, "createdAt">
 
+/**
+ * A service document exactly as `GET /services` sends it.
+ *
+ * Over HTTP every value arrives as text or a number, so `_id` is a string and
+ * `createdAt` is an ISO date string instead of a `Date`.
+ */
+export type ServiceDocument = {
+  _id: string
+  serviceName?: string
+  category?: string
+  description?: string
+  price?: number
+  duration?: number
+  image?: string
+  status?: string
+  createdAt?: string
+}
+
+/**
+ * A service as the Manage Services page holds it: the same fields plus a plain
+ * string `id` to use as the React key and in `/api/admin/services/${id}`.
+ */
+export type ServiceRow = Omit<IService, "createdAt"> & {
+  id: string
+  createdAt?: string
+}
+
+/**
+ * Turns one document from the API into a row the table can render.
+ *
+ * The fallbacks are only here so a half-filled document cannot break the page;
+ * normal services always have every field.
+ */
+export function toServiceRow(document: ServiceDocument): ServiceRow {
+  return {
+    id: String(document._id),
+    serviceName: document.serviceName ?? "",
+    category: document.category ?? "",
+    description: document.description ?? "",
+    price: Number(document.price ?? 0),
+    duration: Number(document.duration ?? 0),
+    image: document.image ?? "",
+    status: document.status === "inactive" ? "inactive" : "active",
+  }
+}
+
 /** What the form holds while editing — numbers stay strings until validated. */
 export type ServiceFormValues = {
   serviceName: string
