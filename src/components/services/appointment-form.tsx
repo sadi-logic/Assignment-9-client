@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, type FormEvent } from "react"
+import { useRouter } from "next/navigation"
 import { InfoIcon } from "lucide-react"
 import { toast } from "sonner"
 
@@ -21,21 +22,27 @@ import { cn } from "cn"
 /**
  * The customer's booking form: date, time slot and an optional note.
  *
- * Booking requests are not connected yet — the Express API still has no
- * `POST /appointments` route — so the submit button is deliberately disabled
- * and the panel says so. Everything else (validation, limits, controlled
- * inputs) is finished and will start working the moment the endpoint exists.
+ * The form validates locally before sending to the customer-only Next.js API
+ * route. The API route verifies the session and role before forwarding to Express.
  */
-export function AppointmentForm({ serviceName }: { serviceName: string }) {
+export function AppointmentForm({
+  serviceId,
+  serviceName,
+}: {
+  serviceId: string
+  serviceName: string
+}) {
+  const router = useRouter()
   const [appointmentDate, setAppointmentDate] = useState("")
   const [timeSlot, setTimeSlot] = useState("")
   const [message, setMessage] = useState("")
   const [errors, setErrors] = useState<AppointmentFieldErrors>({})
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Recomputed on every render so the minimum can never go stale.
   const minDate = todayIsoDate()
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
     const values = { appointmentDate, timeSlot, message }
@@ -44,9 +51,45 @@ export function AppointmentForm({ serviceName }: { serviceName: string }) {
 
     if (hasAppointmentErrors(nextErrors)) return
 
-    // Reached only when appointment requests are switched on. Nothing is sent
-    // today, and we never pretend an appointment was created.
-    toast.info("Appointment requests aren't open yet — nothing was sent.")
+    setIsSubmitting(true)
+
+    try {
+      const response = await fetch("/api/appointments", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          serviceId,
+          appointmentDate,
+          timeSlot,
+          message,
+        }),
+      })
+      const payload = (await response.json().catch(() => null)) as
+        | { error?: string; errors?: AppointmentFieldErrors }
+        | null
+
+      if (response.status === 401) {
+        toast.error(payload?.error ?? "Please sign in to request an appointment.")
+        router.push(`/sign-in?next=/services/${encodeURIComponent(serviceId)}`)
+        return
+      }
+
+      if (!response.ok) {
+        if (payload?.errors) setErrors(payload.errors)
+        toast.error(payload?.error ?? "The appointment request could not be sent.")
+        return
+      }
+
+      toast.success("Appointment request submitted. The salon will review it.")
+      setAppointmentDate("")
+      setTimeSlot("")
+      setMessage("")
+      setErrors({})
+    } catch {
+      toast.error("The appointment service could not be reached. Please try again.")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -212,21 +255,21 @@ export function AppointmentForm({ serviceName }: { serviceName: string }) {
       >
         <p className="flex items-center gap-2 text-[0.55rem] font-medium tracking-[0.22em] text-brand-plum uppercase">
           <InfoIcon aria-hidden className="size-3.5" />
-          Booking opens soon
+          Your request
         </p>
         <p className="mt-1.5 text-xs leading-relaxed text-foreground/70">
-          The salon is finishing its appointment system. You can prepare your
-          request for {serviceName}, but it cannot be sent yet.
+          Submit your preferred date and time for {serviceName}. The salon will
+          confirm it before payment.
         </p>
       </div>
 
       <Button
         type="submit"
-        disabled
+        disabled={isSubmitting}
         aria-describedby="booking-status"
         className="h-11 w-full rounded-full text-[0.65rem] tracking-[0.18em] uppercase"
       >
-        Request appointment
+        {isSubmitting ? "Sending request…" : "Request appointment"}
       </Button>
     </form>
   )

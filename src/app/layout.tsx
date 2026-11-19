@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import type { Metadata } from "next"
 import { Cormorant_Garamond, Jost } from "next/font/google"
 import "./globals.css"
@@ -35,12 +36,20 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${jost.variable} ${cormorant.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-background font-sans text-foreground">
-        <SiteHeader />
+        <Suspense fallback={<HeaderFallback />}>
+          <SiteHeader />
+        </Suspense>
         <div id="main-content" tabIndex={-1} className="flex flex-1 flex-col outline-none">
           {children}
         </div>
         <Toaster position="bottom-right" closeButton />
       </body>
     </html>
+  )
+}
+
+function HeaderFallback() {
+  return (
+    <header className="sticky top-0 z-40 h-16 border-b border-border/70 bg-background/85 sm:h-20" />
   )
 }

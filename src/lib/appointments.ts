@@ -123,3 +123,55 @@ export function validateAppointmentForm(
 export function hasAppointmentErrors(errors: AppointmentFieldErrors): boolean {
   return Object.values(errors).some(Boolean)
 }
+
+export type AppointmentSubmission = {
+  serviceId: string
+  appointmentDate: string
+  timeSlot: AppointmentTimeSlot
+  message: string
+}
+
+export type AppointmentSubmissionParseResult =
+  | { ok: true; data: AppointmentSubmission }
+  | { ok: false; errors: AppointmentFieldErrors }
+
+/** Validates a booking request again in a Next.js API route. */
+export function parseAppointmentSubmission(
+  input: unknown
+): AppointmentSubmissionParseResult {
+  if (typeof input !== "object" || input === null || Array.isArray(input)) {
+    return {
+      ok: false,
+      errors: { form: "Send the appointment as a JSON object." },
+    }
+  }
+
+  const body = input as Record<string, unknown>
+  const values: AppointmentFormValues = {
+    appointmentDate:
+      typeof body.appointmentDate === "string" ? body.appointmentDate : "",
+    timeSlot: typeof body.timeSlot === "string" ? body.timeSlot : "",
+    message: typeof body.message === "string" ? body.message : "",
+  }
+  const errors = validateAppointmentForm(values)
+
+  const serviceId =
+    typeof body.serviceId === "string" ? body.serviceId.trim() : ""
+  if (!/^[a-f\d]{24}$/i.test(serviceId)) {
+    errors.form = "Choose a valid service."
+  }
+
+  if (hasAppointmentErrors(errors)) {
+    return { ok: false, errors }
+  }
+
+  return {
+    ok: true,
+    data: {
+      serviceId,
+      appointmentDate: values.appointmentDate,
+      timeSlot: values.timeSlot as AppointmentTimeSlot,
+      message: values.message.trim(),
+    },
+  }
+}

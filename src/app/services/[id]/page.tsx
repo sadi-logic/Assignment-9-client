@@ -227,7 +227,10 @@ function BookingPanel({
         Request an appointment
       </p>
       <div className="mt-4">
-        <AppointmentForm serviceName={service.serviceName} />
+        <AppointmentForm
+          serviceId={service.id}
+          serviceName={service.serviceName}
+        />
       </div>
     </div>
   )
