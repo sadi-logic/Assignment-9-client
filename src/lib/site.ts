@@ -11,7 +11,7 @@ export const siteConfig = {
 
 export const routes = {
   home: "/",
-  services: "/services",
+  services: "/browse-services",
   signIn: "/sign-in",
   signUp: "/sign-up",
   dashboard: "/dashboard",
@@ -34,6 +34,36 @@ export const routes = {
  */
 export function dashboardForRole(role?: string | null) {
   return role === "admin" ? routes.adminDashboard : routes.customerDashboard
+}
+
+/**
+ * Public details route for one service. The page itself is built in a later
+ * task; this keeps the link target in one place.
+ */
+export function serviceDetailsPath(id: string) {
+  return `/services/${id}`
+}
+
+/**
+ * Builds a `/browse-services` URL from the current filters.
+ *
+ * Empty values are left out, so an untouched page is simply
+ * `/browse-services` and a filtered one is short and shareable, e.g.
+ * `/browse-services?search=hair&category=Makeup&sort=price-asc`.
+ */
+export function browseServicesHref(filters: {
+  search?: string
+  category?: string
+  sort?: string
+}) {
+  const params = new URLSearchParams()
+
+  if (filters.search?.trim()) params.set("search", filters.search.trim())
+  if (filters.category) params.set("category", filters.category)
+  if (filters.sort && filters.sort !== "default") params.set("sort", filters.sort)
+
+  const query = params.toString()
+  return query ? `${routes.services}?${query}` : routes.services
 }
 
 export const publicNav = [

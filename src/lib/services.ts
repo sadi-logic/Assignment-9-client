@@ -38,6 +38,18 @@ export const SERVICE_CURRENCY = {
 } as const
 
 /**
+ * The price orderings the Browse Services page offers. `default` means "the
+ * order the API returned", which is the order services were added.
+ */
+export const SERVICE_SORT_OPTIONS = [
+  { value: "default", label: "Default order" },
+  { value: "price-asc", label: "Price: Low to High" },
+  { value: "price-desc", label: "Price: High to Low" },
+] as const
+
+export type ServiceSort = (typeof SERVICE_SORT_OPTIONS)[number]["value"]
+
+/**
  * The `services` collection document, exactly as specified by the assignment.
  * `createdAt` is assigned by the server, never collected from the form.
  */
@@ -99,6 +111,71 @@ export function toServiceRow(document: ServiceDocument): ServiceRow {
     image: document.image ?? "",
     status: document.status === "inactive" ? "inactive" : "active",
   }
+}
+
+/**
+ * True when a value from the API looks like a service we can actually render.
+ * A row without an `_id` or a name would produce a broken card and a broken
+ * link, so it is skipped instead of shown half-empty.
+ */
+export function isServiceDocument(value: unknown): value is ServiceDocument {
+  if (typeof value !== "object" || value === null) return false
+
+  const document = value as Record<string, unknown>
+  return (
+    typeof document._id === "string" &&
+    typeof document.serviceName === "string" &&
+    document.serviceName.trim() !== ""
+  )
+}
+
+/** Turns a `GET /services` response body into rows, skipping malformed items. */
+export function parseServiceList(input: unknown): ServiceRow[] {
+  return Array.isArray(input) ? input.filter(isServiceDocument).map(toServiceRow) : []
+}
+
+export function isServiceSort(value: unknown): value is ServiceSort {
+  return SERVICE_SORT_OPTIONS.some((option) => option.value === value)
+}
+
+export type ServiceFilters = {
+  /** Searched against the service name only, ignoring case. */
+  search: string
+  /** A category from `SERVICE_CATEGORIES`, or "" for all categories. */
+  category: string
+  sort: ServiceSort
+}
+
+/**
+ * Applies the Browse Services filters to an already-loaded list.
+ *
+ * The menu is small (one salon, a few dozen services), so all three filters run
+ * here in one pass instead of asking the API for every combination. When the
+ * catalogue grows, this is the function to move into the Express query.
+ */
+export function filterServices(
+  services: ServiceRow[],
+  filters: ServiceFilters
+): ServiceRow[] {
+  const search = filters.search.trim().toLowerCase()
+
+  // `filter` already returns a new array, so sorting it cannot reorder the input.
+  const matches = services.filter((service) => {
+    const matchesSearch =
+      search === "" || service.serviceName.toLowerCase().includes(search)
+    const matchesCategory =
+      filters.category === "" || service.category === filters.category
+
+    return matchesSearch && matchesCategory
+  })
+
+  if (filters.sort === "price-asc") {
+    matches.sort((a, b) => a.price - b.price)
+  } else if (filters.sort === "price-desc") {
+    matches.sort((a, b) => b.price - a.price)
+  }
+
+  return matches
 }
 
 /** What the form holds while editing — numbers stay strings until validated. */
