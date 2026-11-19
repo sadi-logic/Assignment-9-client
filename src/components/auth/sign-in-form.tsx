@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { ArrowRightIcon, Loader2Icon } from "lucide-react"
 import { toast } from "sonner"
 
@@ -15,7 +15,7 @@ import { FieldSeparator } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { getAuthErrorMessage } from "@/lib/auth-errors"
 import { authClient } from "@/lib/auth-client"
-import { dashboardForRole, routes } from "@/lib/site"
+import { dashboardForRole, routes, safeReturnPath, signUpHref } from "@/lib/site"
 import {
   BLOCKED_ACCOUNT_MESSAGE,
   isValidEmail,
@@ -29,6 +29,9 @@ type FieldErrors = {
 
 export function SignInForm({ googleEnabled }: { googleEnabled: boolean }) {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  // Set by the Service Details page, e.g. /sign-in?next=%2Fservices%2Fabc123
+  const nextPath = safeReturnPath(searchParams.get("next"))
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [errors, setErrors] = useState<FieldErrors>({})
@@ -86,7 +89,9 @@ export function SignInForm({ googleEnabled }: { googleEnabled: boolean }) {
       )
 
        router.refresh()
-      router.push("/")
+      // Go back to the page that required sign-in (a protected service, for
+      // example); otherwise land on the home page.
+      router.replace(nextPath ?? routes.home)
       // router.replace(dashboardForRole(data?.user?.role))
       // router.refresh()
     } catch {
@@ -113,6 +118,13 @@ export function SignInForm({ googleEnabled }: { googleEnabled: boolean }) {
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
           Your appointments, confirmations and payments — all in one calm place.
         </p>
+
+        {nextPath ? (
+          <p className="mt-4 inline-flex items-center gap-2 rounded-full border border-brand-gold/35 bg-brand-gold/10 px-3 py-1.5 text-[0.55rem] font-medium tracking-[0.16em] text-brand-plum uppercase">
+            <ArrowRightIcon aria-hidden className="size-3" />
+            You’ll return to your service afterwards
+          </p>
+        ) : null}
       </header>
 
       <form onSubmit={handleSubmit} noValidate className="mt-7 flex flex-col gap-4.5">
@@ -196,7 +208,7 @@ export function SignInForm({ googleEnabled }: { googleEnabled: boolean }) {
       <p className="mt-7 text-center text-sm text-muted-foreground">
         New to SalonBook?{" "}
         <Link
-          href={routes.signUp}
+          href={signUpHref(nextPath)}
           className="font-medium text-foreground underline decoration-brand-gold/60 underline-offset-4 transition-colors hover:decoration-brand-gold"
         >
           Create an account

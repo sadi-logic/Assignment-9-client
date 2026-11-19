@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { ArrowRightIcon, Loader2Icon } from "lucide-react"
 import { toast } from "sonner"
 
@@ -17,7 +17,7 @@ import { FieldDescription, FieldSeparator } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { getAuthErrorMessage } from "@/lib/auth-errors"
 import { authClient } from "@/lib/auth-client"
-import { dashboardForRole, routes } from "@/lib/site"
+import { dashboardForRole, routes, safeReturnPath, signInHref } from "@/lib/site"
 import {
   PASSWORD_POLICY_MESSAGE,
   isStrongPassword,
@@ -45,6 +45,10 @@ function getInitials(name: string, email: string) {
 
 export function SignUpForm({ googleEnabled }: { googleEnabled: boolean }) {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  // Carried over from /sign-in?next=... so a new customer still lands on the
+  // service they were trying to book.
+  const nextPath = safeReturnPath(searchParams.get("next"))
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -121,7 +125,8 @@ export function SignUpForm({ googleEnabled }: { googleEnabled: boolean }) {
       )
 
        router.refresh()
-      router.push("/")
+      // Return to the page that asked for an account, if there was one.
+      router.replace(nextPath ?? routes.home)
 
       // router.replace(dashboardForRole(data?.user?.role))
       // router.refresh()
@@ -294,7 +299,7 @@ export function SignUpForm({ googleEnabled }: { googleEnabled: boolean }) {
       <p className="mt-7 text-center text-sm text-muted-foreground">
         Already have an account?{" "}
         <Link
-          href={routes.signIn}
+          href={signInHref(nextPath)}
           className="font-medium text-foreground underline decoration-brand-gold/60 underline-offset-4 transition-colors hover:decoration-brand-gold"
         >
           Sign in

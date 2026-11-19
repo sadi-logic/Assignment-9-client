@@ -1,10 +1,10 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useSearchParams } from "next/navigation"
 import { cn } from "cn"
 
-import { routes } from "@/lib/site"
+import { authHref, routes } from "@/lib/site"
 
 const modes = [
   { href: routes.signIn, label: "Sign In" },
@@ -17,6 +17,9 @@ const modes = [
  */
 export function AuthModeSwitch() {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
+  // Keep a pending return destination when switching between the two forms.
+  const nextPath = searchParams.get("next")
 
   return (
     <div
@@ -30,7 +33,7 @@ export function AuthModeSwitch() {
         return (
           <Link
             key={mode.href}
-            href={mode.href}
+            href={authHref(mode.href, nextPath)}
             aria-current={active ? "page" : undefined}
             className={cn(
               "rounded-full px-4 py-2.5 text-center text-[0.68rem] font-medium tracking-[0.16em] uppercase transition-colors duration-200 outline-none focus-visible:ring-2 focus-visible:ring-ring",

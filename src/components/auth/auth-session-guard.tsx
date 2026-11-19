@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
 import { authClient } from "@/lib/auth-client"
-import { dashboardForRole } from "@/lib/site"
+import { dashboardForRole, safeReturnPath } from "@/lib/site"
 import { BLOCKED_ACCOUNT_MESSAGE } from "@/lib/validation"
 
 /**
@@ -27,7 +27,14 @@ export function AuthSessionGuard() {
       return
     }
 
-    router.replace(dashboardForRole(session.user.role))
+    // A protected page can ask us to come back after signing in. Reading the
+    // URL here (instead of useSearchParams) keeps the guard free of another
+    // Suspense requirement.
+    const nextPath = safeReturnPath(
+      new URLSearchParams(window.location.search).get("next")
+    )
+
+    router.replace(nextPath ?? dashboardForRole(session.user.role))
   }, [isPending, session, router])
 
   return null

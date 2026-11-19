@@ -134,6 +134,16 @@ export function parseServiceList(input: unknown): ServiceRow[] {
   return Array.isArray(input) ? input.filter(isServiceDocument).map(toServiceRow) : []
 }
 
+/**
+ * True for a 24-character hex MongoDB ObjectId.
+ *
+ * Checking this first lets the page answer "not found" for a mistyped URL
+ * without spending a request on the API.
+ */
+export function isServiceId(value: string): boolean {
+  return /^[a-f\d]{24}$/i.test(value)
+}
+
 export function isServiceSort(value: unknown): value is ServiceSort {
   return SERVICE_SORT_OPTIONS.some((option) => option.value === value)
 }

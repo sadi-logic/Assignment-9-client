@@ -45,6 +45,36 @@ export function serviceDetailsPath(id: string) {
 }
 
 /**
+ * Only same-site paths are allowed as a post-sign-in destination.
+ *
+ * Returning `null` for anything else (full URLs, `//evil.example`, auth pages)
+ * is what stops `?next=` from becoming an open redirect.
+ */
+export function safeReturnPath(value?: string | null) {
+  if (!value) return null
+  if (!value.startsWith("/") || value.startsWith("//")) return null
+  if (value.startsWith(routes.signIn) || value.startsWith(routes.signUp)) {
+    return null
+  }
+
+  return value
+}
+
+/** Adds a safe `?next=` destination to an auth link when there is one. */
+export function authHref(path: string, nextPath?: string | null) {
+  const safe = safeReturnPath(nextPath)
+  return safe ? `${path}?next=${encodeURIComponent(safe)}` : path
+}
+
+export function signInHref(nextPath?: string | null) {
+  return authHref(routes.signIn, nextPath)
+}
+
+export function signUpHref(nextPath?: string | null) {
+  return authHref(routes.signUp, nextPath)
+}
+
+/**
  * Builds a `/browse-services` URL from the current filters.
  *
  * Empty values are left out, so an untouched page is simply
