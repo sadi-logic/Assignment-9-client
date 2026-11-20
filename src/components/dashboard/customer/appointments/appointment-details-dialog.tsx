@@ -13,7 +13,7 @@ import {
 import {
   AppointmentStatusBadge,
   PaymentStatusBadge,
-} from "@/components/dashboard/customer/appointments/appointment-status-badge"
+} from "@/components/dashboard/appointments/appointment-status-badge"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,

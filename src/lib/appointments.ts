@@ -245,6 +245,14 @@ export const PAYMENT_STATUS_LABELS: Record<PaymentStatus, string> = {
   paid: "Paid",
 }
 
+/** The service fields the appointment list needs for display. */
+type AppointmentServiceDetails = {
+  serviceName?: string
+  category?: string
+  description?: string
+  image?: string
+}
+
 /**
  * Turns one API document into a row the appointment card can render.
  *
@@ -253,10 +261,9 @@ export const PAYMENT_STATUS_LABELS: Record<PaymentStatus, string> = {
  */
 function toAppointmentRow(
   document: AppointmentDocument,
-  servicesById: Map<string, ServiceRow>
+  service?: AppointmentServiceDetails
 ): AppointmentRow {
   const serviceId = document.serviceId ?? ""
-  const service = servicesById.get(serviceId)
 
   return {
     id: document._id,
@@ -299,7 +306,75 @@ export function parseAppointmentList(
 
   return input
     .filter(isAppointmentDocument)
-    .map((document) => toAppointmentRow(document, servicesById))
+    .map((document) =>
+      toAppointmentRow(document, servicesById.get(document.serviceId ?? ""))
+    )
+}
+
+/* -------------------------------------------------------------------------- */
+/* Admin appointment list                                                     */
+/* -------------------------------------------------------------------------- */
+
+/** Customer details attached by the protected admin endpoint. */
+export type AppointmentCustomerDocument = {
+  name?: string
+  email?: string
+  image?: string
+}
+
+/** Service details attached by the protected admin endpoint. */
+export type AppointmentServiceDocument = AppointmentServiceDetails & {
+  status?: string
+}
+
+/** One appointment exactly as `GET /admin/appointments` sends it. */
+export type AdminAppointmentDocument = AppointmentDocument & {
+  service?: AppointmentServiceDocument | null
+  customer?: AppointmentCustomerDocument | null
+}
+
+/** An admin row: the shared appointment fields plus the customer block. */
+export type AdminAppointmentRow = AppointmentRow & {
+  customerName: string
+  customerEmail: string
+  customerImage: string
+}
+
+function isAdminAppointmentDocument(
+  value: unknown
+): value is AdminAppointmentDocument {
+  return isAppointmentDocument(value)
+}
+
+/**
+ * Parses the protected admin list.
+ *
+ * Express already attaches the customer and service objects, so this needs no
+ * second request and never touches the unprotected `/users` endpoint.
+ */
+export function parseAdminAppointmentList(
+  input: unknown
+): AdminAppointmentRow[] {
+  if (!Array.isArray(input)) return []
+
+  return input.filter(isAdminAppointmentDocument).map((document) => ({
+    ...toAppointmentRow(document, document.service ?? undefined),
+    customerName: document.customer?.name?.trim() || "Deleted customer",
+    customerEmail: document.customer?.email?.trim() || "No email on file",
+    customerImage: document.customer?.image?.trim() || "",
+  }))
+}
+
+/** Admins may confirm only pending requests. */
+export function canConfirmAppointment(appointment: AppointmentRow): boolean {
+  return appointment.status === "pending"
+}
+
+/** Admins may cancel pending or confirmed appointments, never cancelled ones. */
+export function canAdminCancelAppointment(
+  appointment: AppointmentRow
+): boolean {
+  return appointment.status === "pending" || appointment.status === "confirmed"
 }
 
 /** "2026-11-25" → "Wed, Nov 25, 2026" (local time, so the day cannot shift). */
