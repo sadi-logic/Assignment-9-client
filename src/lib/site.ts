@@ -44,6 +44,10 @@ export function serviceDetailsPath(id: string) {
   return `/services/${id}`
 }
 
+export function appointmentCheckoutPath(appointmentId: string) {
+  return `${routes.customerAppointments}/${encodeURIComponent(appointmentId)}/checkout`
+}
+
 /**
  * Only same-site paths are allowed as a post-sign-in destination.
  *
