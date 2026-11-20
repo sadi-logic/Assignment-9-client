@@ -90,7 +90,10 @@ export async function PATCH(
   try {
     response = await backendFetch(`/services/${id}`, {
       method: "PATCH",
-      headers: { "content-type": "application/json" },
+      headers: {
+        "content-type": "application/json",
+        cookie: request.headers.get("cookie") ?? "",
+      },
       body: JSON.stringify(parsed.data),
     })
   } catch (error) {
@@ -131,7 +134,10 @@ export async function DELETE(
 
   let response: Response
   try {
-    response = await backendFetch(`/services/${id}`, { method: "DELETE" })
+    response = await backendFetch(`/services/${id}`, {
+      method: "DELETE",
+      headers: { cookie: request.headers.get("cookie") ?? "" },
+    })
   } catch (error) {
     return backendError(error)
   }

@@ -47,7 +47,9 @@ export async function POST(request: Request) {
 
   let serviceResponse: Response
   try {
-    serviceResponse = await backendFetch("/services", { method: "GET" })
+    serviceResponse = await backendFetch("/services", { method: "GET", headers: {
+        cookie: request.headers.get("cookie") ?? "",
+      }, })
   } catch (error) {
     return Response.json(
       {
@@ -97,7 +99,7 @@ export async function POST(request: Request) {
   try {
     appointmentResponse = await backendFetch("/appointments", {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: { "content-type": "application/json",cookie: request.headers.get("cookie") ?? "", },
       body: JSON.stringify({
         serviceId: parsed.data.serviceId,
         customerId: session.user.id,
@@ -128,12 +130,30 @@ export async function POST(request: Request) {
     )
   }
 
-  if (!appointmentResponse.ok) {
-    return Response.json(
-      { error: "The appointment API could not save this request." },
-      { status: 502 }
-    )
-  }
+if (!appointmentResponse.ok) {
+  const errorText = await appointmentResponse.text()
+
+  console.error("Appointment API failed:", {
+    status: appointmentResponse.status,
+    response: errorText,
+  })
+
+  return Response.json(
+    {
+      error: "Appointment API failed",
+      backendStatus: appointmentResponse.status,
+      backendResponse: errorText,
+    },
+    { status: 502 }
+  )
+}
+
+  // if (!appointmentResponse.ok) {
+  //   return Response.json(
+  //     { error: "The appointment API could not save this request." },
+  //     { status: 502 }
+  //   )
+  // }
 
   const result = (await appointmentResponse.json().catch(() => null)) as
     | { ok?: boolean; id?: unknown }

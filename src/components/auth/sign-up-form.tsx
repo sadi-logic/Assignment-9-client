@@ -17,7 +17,7 @@ import { FieldDescription, FieldSeparator } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { getAuthErrorMessage } from "@/lib/auth-errors"
 import { authClient } from "@/lib/auth-client"
-import { dashboardForRole, routes, safeReturnPath, signInHref } from "@/lib/site"
+import { dashboardForRole, safeReturnPath, signInHref } from "@/lib/site"
 import {
   PASSWORD_POLICY_MESSAGE,
   isStrongPassword,
@@ -126,10 +126,7 @@ export function SignUpForm({ googleEnabled }: { googleEnabled: boolean }) {
 
        router.refresh()
       // Return to the page that asked for an account, if there was one.
-      router.replace(nextPath ?? routes.home)
-
-      // router.replace(dashboardForRole(data?.user?.role))
-      // router.refresh()
+       router.replace(nextPath ?? dashboardForRole(data?.user?.role))
     } catch {
       const message =
         "We could not reach the server. Check your connection and try again."

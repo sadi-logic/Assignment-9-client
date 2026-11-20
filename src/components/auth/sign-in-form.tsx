@@ -15,7 +15,7 @@ import { FieldSeparator } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { getAuthErrorMessage } from "@/lib/auth-errors"
 import { authClient } from "@/lib/auth-client"
-import { dashboardForRole, routes, safeReturnPath, signUpHref } from "@/lib/site"
+import { dashboardForRole, safeReturnPath, signUpHref } from "@/lib/site"
 import {
   BLOCKED_ACCOUNT_MESSAGE,
   isValidEmail,
@@ -90,10 +90,8 @@ export function SignInForm({ googleEnabled }: { googleEnabled: boolean }) {
 
        router.refresh()
       // Go back to the page that required sign-in (a protected service, for
-      // example); otherwise land on the home page.
-      router.replace(nextPath ?? routes.home)
-      // router.replace(dashboardForRole(data?.user?.role))
-      // router.refresh()
+       // example); otherwise open the correct role dashboard.
+       router.replace(nextPath ?? dashboardForRole(data?.user?.role))
     } catch {
       const message =
         "We could not reach the server. Check your connection and try again."

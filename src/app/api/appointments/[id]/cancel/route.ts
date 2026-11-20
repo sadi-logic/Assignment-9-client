@@ -2,9 +2,9 @@ import { auth } from "@/lib/auth"
 import { BACKEND_UNAVAILABLE_MESSAGE, backendFetch } from "@/lib/backend"
 
 /**
- * Cancels one appointment. The browser never chooses who it belongs to: the
- * customer id comes from the verified Better Auth session and is forwarded to
- * Express, which repeats the ownership and `pending` checks.
+ * Cancels one appointment. The browser never chooses its owner. The Better
+ * Auth cookie is forwarded to Express, which verifies the customer and
+ * repeats the ownership and `pending` checks.
  */
 export async function PATCH(
   request: Request,
@@ -44,8 +44,9 @@ export async function PATCH(
   try {
     response = await backendFetch(`/appointments/${id}/cancel`, {
       method: "PATCH",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ customerId: session.user.id }),
+      headers: {
+        cookie: request.headers.get("cookie") ?? "",
+      },
     })
   } catch (error) {
     return Response.json(

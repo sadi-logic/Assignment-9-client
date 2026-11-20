@@ -34,9 +34,8 @@ export const metadata: Metadata = {
 /**
  * Customer-only page.
  *
- * The session is read on the server first, then the appointments are fetched
- * with the verified user id. The browser never receives another customer's
- * list, and it never decides who the customer is.
+ * The session is read on the server first, then its cookie is forwarded to
+ * Express so the API can verify the same customer before returning bookings.
  */
 export default function MyAppointmentsPage() {
   return (
@@ -49,7 +48,8 @@ export default function MyAppointmentsPage() {
 }
 
 async function AppointmentsContent() {
-  const session = await auth.api.getSession({ headers: await headers() })
+  const requestHeaders = await headers()
+  const session = await auth.api.getSession({ headers: requestHeaders })
 
   if (!session?.user) {
     redirect(signInHref(routes.customerAppointments))
@@ -59,8 +59,13 @@ async function AppointmentsContent() {
   if (session.user.role !== "customer") {
     redirect(dashboardForRole(session.user.role))
   }
+  if (session.user.isBlocked) {
+    redirect(routes.home)
+  }
 
-  const { appointments, error } = await getCustomerAppointments(session.user.id)
+  const { appointments, error } = await getCustomerAppointments(
+    requestHeaders.get("cookie") ?? ""
+  )
   const counts = countAppointments(appointments)
 
   return (
@@ -156,14 +161,14 @@ async function AppointmentsContent() {
  * Any failure becomes a readable message — never a made-up appointment.
  */
 async function getCustomerAppointments(
-  customerId: string
+  cookie: string
 ): Promise<{ appointments: AppointmentRow[]; error: string | null }> {
   try {
     const [appointmentsResponse, servicesResponse] = await Promise.all([
-      backendFetch(
-        `/appointments?customerId=${encodeURIComponent(customerId)}`,
-        { method: "GET" }
-      ),
+      backendFetch("/appointments", {
+        method: "GET",
+        headers: { cookie },
+      }),
       backendFetch("/services", { method: "GET" }),
     ])
 

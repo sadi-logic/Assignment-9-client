@@ -64,7 +64,10 @@ export async function POST(request: Request) {
   try {
     response = await backendFetch("/services", {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: {
+        "content-type": "application/json",
+        cookie: request.headers.get("cookie") ?? "",
+      },
       body: JSON.stringify(document),
     })
   } catch (error) {

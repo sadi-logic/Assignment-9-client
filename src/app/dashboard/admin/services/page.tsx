@@ -47,6 +47,9 @@ async function AdminServicesContent() {
   if (session.user.role !== "admin") {
     redirect(routes.customerDashboard)
   }
+  if (session.user.isBlocked) {
+    redirect(routes.home)
+  }
 
   // Reading the list here means the table arrives already filled in, so the
   // browser needs no loading state and no `useEffect`.

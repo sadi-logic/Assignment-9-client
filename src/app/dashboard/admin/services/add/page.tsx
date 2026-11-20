@@ -41,6 +41,9 @@ async function AdminServicePage() {
   if (session.user.role !== "admin") {
     redirect(routes.customerDashboard)
   }
+  if (session.user.isBlocked) {
+    redirect(routes.home)
+  }
 
   // Only a boolean crosses into the client: the key itself stays server-side.
   const uploadConfigured = Boolean(process.env.IMGBB_API_KEY?.trim())

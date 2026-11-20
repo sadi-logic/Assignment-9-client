@@ -2,18 +2,17 @@ import Image from "next/image"
 import {
   CalendarDaysIcon,
   Clock3Icon,
-  CreditCardIcon,
   ReceiptTextIcon,
   ScissorsIcon,
 } from "lucide-react"
 
 import { CancelAppointmentDialog } from "@/components/dashboard/customer/appointments/cancel-appointment-dialog"
 import { AppointmentDetailsDialog } from "@/components/dashboard/customer/appointments/appointment-details-dialog"
+import { PayAppointmentButton } from "@/components/dashboard/customer/appointments/pay-appointment-button"
 import {
   AppointmentStatusBadge,
   PaymentStatusBadge,
 } from "@/components/dashboard/appointments/appointment-status-badge"
-import { Button } from "@/components/ui/button"
 import {
   canCancelAppointment,
   canPayAppointment,
@@ -37,7 +36,6 @@ export function AppointmentCard({
   const price = formatServicePrice(appointment.servicePrice)
   const canCancel = canCancelAppointment(appointment)
   const canPay = canPayAppointment(appointment)
-  const paymentNoteId = `payment-note-${appointment.id}`
   const titleId = `appointment-title-${appointment.id}`
 
   return (
@@ -111,23 +109,7 @@ export function AppointmentCard({
           ) : null}
 
           {canPay ? (
-            <div className="flex flex-wrap items-center gap-2">
-              <Button
-                size="sm"
-                disabled
-                aria-describedby={paymentNoteId}
-                className="h-9 rounded-full px-4 text-[0.6rem] tracking-[0.16em] uppercase"
-              >
-                <CreditCardIcon aria-hidden />
-                Pay now
-              </Button>
-              <span
-                id={paymentNoteId}
-                className="text-[0.65rem] text-muted-foreground"
-              >
-                Online payment opens soon.
-              </span>
-            </div>
+            <PayAppointmentButton appointmentId={appointment.id} />
           ) : null}
         </div>
       </div>
