@@ -1,11 +1,13 @@
 /**
  * SalonBook appointment domain.
  *
- * The Express API does not have an appointments endpoint yet, so nothing in
- * this file talks to the network. It holds the pieces the booking form needs
- * today — the slot list, limits and validation — plus the `IAppointment` shape
- * the backend will store, so the contract lives in one obvious place.
+ * Nothing in this file talks to the network. It holds the pieces the booking
+ * form and the customer's appointment list share: the slot list, validation,
+ * the `IAppointment` document shape, and small helpers that turn an API
+ * response into the rows the UI renders.
  */
+
+import type { ServiceRow } from "@/lib/services"
 
 /** Statuses the salon can put an appointment in. */
 export type AppointmentStatus = "pending" | "confirmed" | "cancelled"
@@ -174,4 +176,189 @@ export function parseAppointmentSubmission(
       message: values.message.trim(),
     },
   }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Customer appointment list                                                  */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * One appointment exactly as `GET /appointments` sends it.
+ *
+ * Over HTTP `_id` and `serviceId` arrive as strings (MongoDB ObjectIds are
+ * converted by `JSON.stringify`) and `createdAt` is an ISO date string. The
+ * service itself is only a reference here, so the page joins it with the
+ * service list.
+ */
+export type AppointmentDocument = {
+  _id: string
+  serviceId?: string
+  customerId?: string
+  appointmentDate?: string
+  timeSlot?: string
+  message?: string
+  servicePrice?: number
+  paymentStatus?: string
+  status?: string
+  createdAt?: string
+}
+
+/**
+ * An appointment ready to render: its own fields plus the service details the
+ * list shows. `servicePrice` is the price stored when the customer booked, so a
+ * later price change does not rewrite history.
+ */
+export type AppointmentRow = {
+  id: string
+  serviceId: string
+  serviceName: string
+  serviceCategory: string
+  serviceDescription: string
+  serviceImage: string
+  appointmentDate: string
+  timeSlot: string
+  message: string
+  servicePrice: number
+  paymentStatus: PaymentStatus
+  status: AppointmentStatus
+  createdAt: string
+}
+
+export function isAppointmentStatus(
+  value: unknown
+): value is AppointmentStatus {
+  return value === "pending" || value === "confirmed" || value === "cancelled"
+}
+
+export function isPaymentStatus(value: unknown): value is PaymentStatus {
+  return value === "unpaid" || value === "paid"
+}
+
+export const APPOINTMENT_STATUS_LABELS: Record<AppointmentStatus, string> = {
+  pending: "Pending",
+  confirmed: "Confirmed",
+  cancelled: "Cancelled",
+}
+
+export const PAYMENT_STATUS_LABELS: Record<PaymentStatus, string> = {
+  unpaid: "Unpaid",
+  paid: "Paid",
+}
+
+/**
+ * Turns one API document into a row the appointment card can render.
+ *
+ * The service is optional: if it was deleted, the appointment still belongs to
+ * the customer, so it is shown with a neutral fallback instead of disappearing.
+ */
+function toAppointmentRow(
+  document: AppointmentDocument,
+  servicesById: Map<string, ServiceRow>
+): AppointmentRow {
+  const serviceId = document.serviceId ?? ""
+  const service = servicesById.get(serviceId)
+
+  return {
+    id: document._id,
+    serviceId,
+    serviceName: service?.serviceName || "Service no longer listed",
+    serviceCategory: service?.category || "Salon service",
+    serviceDescription: service?.description || "",
+    serviceImage: service?.image || "",
+    appointmentDate: document.appointmentDate ?? "",
+    timeSlot: document.timeSlot ?? "",
+    message: document.message ?? "",
+    servicePrice:
+      typeof document.servicePrice === "number" ? document.servicePrice : 0,
+    // The backend only writes these two values, so the fallbacks are just for
+    // malformed data and keep the UI from crashing.
+    paymentStatus: isPaymentStatus(document.paymentStatus)
+      ? document.paymentStatus
+      : "unpaid",
+    status: isAppointmentStatus(document.status) ? document.status : "pending",
+    createdAt: document.createdAt ?? "",
+  }
+}
+
+function isAppointmentDocument(value: unknown): value is AppointmentDocument {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    typeof (value as AppointmentDocument)._id === "string"
+  )
+}
+
+/** Parses a `GET /appointments` body and joins each row to its service. */
+export function parseAppointmentList(
+  input: unknown,
+  services: ServiceRow[]
+): AppointmentRow[] {
+  if (!Array.isArray(input)) return []
+
+  const servicesById = new Map(services.map((service) => [service.id, service]))
+
+  return input
+    .filter(isAppointmentDocument)
+    .map((document) => toAppointmentRow(document, servicesById))
+}
+
+/** "2026-11-25" → "Wed, Nov 25, 2026" (local time, so the day cannot shift). */
+export function formatAppointmentDate(value: string): string {
+  if (!value) return "Date to be confirmed"
+
+  const date = new Date(`${value}T00:00:00`)
+  if (Number.isNaN(date.getTime())) return "Date to be confirmed"
+
+  return new Intl.DateTimeFormat("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(date)
+}
+
+/** An ISO timestamp → "Nov 19, 2026". */
+export function formatRequestedAt(value: string): string {
+  if (!value) return "—"
+
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return "—"
+
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(date)
+}
+
+/** The four counters shown above the list, all derived from real data. */
+export type AppointmentCounts = {
+  total: number
+  pending: number
+  confirmed: number
+  cancelled: number
+}
+
+export function countAppointments(
+  appointments: AppointmentRow[]
+): AppointmentCounts {
+  return appointments.reduce<AppointmentCounts>(
+    (counts, appointment) => {
+      counts[appointment.status] += 1
+      return counts
+    },
+    { total: appointments.length, pending: 0, confirmed: 0, cancelled: 0 }
+  )
+}
+
+/** Customers may cancel only their own pending appointments. */
+export function canCancelAppointment(appointment: AppointmentRow): boolean {
+  return appointment.status === "pending"
+}
+
+/** Payment opens only after the salon confirms, and only while unpaid. */
+export function canPayAppointment(appointment: AppointmentRow): boolean {
+  return (
+    appointment.status === "confirmed" && appointment.paymentStatus === "unpaid"
+  )
 }
