@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+
 import {
   SidebarInset,
   SidebarProvider,
@@ -17,7 +19,9 @@ import { DashboardSidebar } from "../components/DashboardSidebar";
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <SidebarProvider className="min-h-0 flex-1">
-      <DashboardSidebar />
+      <Suspense fallback={null}>
+        <DashboardSidebar />
+      </Suspense>
 
       <SidebarInset className="min-w-0">
         <header className="flex h-14 items-center gap-3 border-b border-border/70 px-4 sm:px-6">
