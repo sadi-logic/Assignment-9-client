@@ -1,5 +1,9 @@
 import { auth } from "@/lib/auth"
-import { BACKEND_UNAVAILABLE_MESSAGE, backendFetch } from "@/lib/backend"
+import {
+  BACKEND_UNAVAILABLE_MESSAGE,
+  backendAuthHeader,
+  backendFetch,
+} from "@/lib/backend"
 
 export async function POST(request: Request) {
   const session = await auth.api.getSession({ headers: request.headers })
@@ -40,7 +44,7 @@ export async function POST(request: Request) {
       method: "POST",
       headers: {
         "content-type": "application/json",
-        cookie: request.headers.get("cookie") ?? "",
+        ...backendAuthHeader(session.session.token),
       },
       body: JSON.stringify({ appointmentId }),
     })

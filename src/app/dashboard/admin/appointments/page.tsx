@@ -22,7 +22,7 @@ import {
   type AdminAppointmentRow,
 } from "@/lib/appointments"
 import { auth } from "@/lib/auth"
-import { BACKEND_UNAVAILABLE_MESSAGE, backendFetch } from "@/lib/backend"
+import { BACKEND_UNAVAILABLE_MESSAGE, backendAuthHeader, backendFetch } from "@/lib/backend"
 import { dashboardForRole, routes, signInHref } from "@/lib/site"
 
 export const metadata: Metadata = {
@@ -65,10 +65,11 @@ async function AdminAppointmentsContent() {
     redirect(routes.home)
   }
 
-  // The same cookie the browser sent is forwarded to Express, which verifies it
-  // with Better Auth before returning any appointment data.
-  const cookie = requestHeaders.get("cookie") ?? ""
-  const { appointments, error } = await getAdminAppointments(cookie)
+  // The session token is forwarded to Express, which looks it up again before
+  // returning any appointment data.
+  const { appointments, error } = await getAdminAppointments(
+    session.session.token
+  )
   const counts = countAppointments(appointments)
 
   return (
@@ -172,12 +173,12 @@ async function AdminAppointmentsContent() {
  * the same response, so there is no separate `/users` call.
  */
 async function getAdminAppointments(
-  cookie: string
+  token: string
 ): Promise<{ appointments: AdminAppointmentRow[]; error: string | null }> {
   try {
     const response = await backendFetch("/admin/appointments", {
       method: "GET",
-      headers: { cookie },
+      headers: { ...backendAuthHeader(token) },
     })
 
     if (!response.ok) {

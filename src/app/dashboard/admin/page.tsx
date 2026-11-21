@@ -14,7 +14,7 @@ import {
 
 import { Button } from "@/components/ui/button"
 import { auth } from "@/lib/auth"
-import { BACKEND_UNAVAILABLE_MESSAGE, backendFetch } from "@/lib/backend"
+import { BACKEND_UNAVAILABLE_MESSAGE, backendAuthHeader, backendFetch } from "@/lib/backend"
 import {
   countAppointments,
   parseAdminAppointmentList,
@@ -40,9 +40,7 @@ async function AdminDashboardContent() {
   }
   if (session.user.isBlocked) redirect(routes.home)
 
-  const { stats, error } = await getAdminDashboardStats(
-    (await headers()).get("cookie") ?? ""
-  )
+  const { stats, error } = await getAdminDashboardStats(session.session.token)
 
   return (
     <main className="mx-auto w-full max-w-6xl">
@@ -120,14 +118,14 @@ async function AdminDashboardContent() {
   )
 }
 
-async function getAdminDashboardStats(cookie: string) {
+async function getAdminDashboardStats(token: string) {
   try {
     const [usersResponse, servicesResponse, appointmentsResponse, transactionsResponse] =
       await Promise.all([
-        backendFetch("/users", { method: "GET", headers: { cookie } }),
+        backendFetch("/users", { method: "GET", headers: { ...backendAuthHeader(token) } }),
         backendFetch("/services", { method: "GET" }),
-        backendFetch("/admin/appointments", { method: "GET", headers: { cookie } }),
-        backendFetch("/admin/transactions", { method: "GET", headers: { cookie } }),
+        backendFetch("/admin/appointments", { method: "GET", headers: { ...backendAuthHeader(token) } }),
+        backendFetch("/admin/transactions", { method: "GET", headers: { ...backendAuthHeader(token) } }),
       ])
 
     const apiResponses: Array<[string, Response]> = [

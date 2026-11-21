@@ -21,7 +21,7 @@ import {
   type AppointmentRow,
 } from "@/lib/appointments"
 import { auth } from "@/lib/auth"
-import { BACKEND_UNAVAILABLE_MESSAGE, backendFetch } from "@/lib/backend"
+import { BACKEND_UNAVAILABLE_MESSAGE, backendAuthHeader, backendFetch } from "@/lib/backend"
 import { parseServiceList } from "@/lib/services"
 import { dashboardForRole, routes, signInHref } from "@/lib/site"
 
@@ -64,7 +64,7 @@ async function AppointmentsContent() {
   }
 
   const { appointments, error } = await getCustomerAppointments(
-    requestHeaders.get("cookie") ?? ""
+    session.session.token
   )
   const counts = countAppointments(appointments)
 
@@ -161,13 +161,13 @@ async function AppointmentsContent() {
  * Any failure becomes a readable message — never a made-up appointment.
  */
 async function getCustomerAppointments(
-  cookie: string
+  token: string
 ): Promise<{ appointments: AppointmentRow[]; error: string | null }> {
   try {
     const [appointmentsResponse, servicesResponse] = await Promise.all([
       backendFetch("/appointments", {
         method: "GET",
-        headers: { cookie },
+        headers: { ...backendAuthHeader(token) },
       }),
       backendFetch("/services", { method: "GET" }),
     ])

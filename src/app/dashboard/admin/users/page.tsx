@@ -7,7 +7,7 @@ import { UsersIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { UserAccessButton } from "@/components/dashboard/admin/users/user-access-button"
 import { auth } from "@/lib/auth"
-import { BACKEND_UNAVAILABLE_MESSAGE, backendFetch } from "@/lib/backend"
+import { BACKEND_UNAVAILABLE_MESSAGE, backendAuthHeader, backendFetch } from "@/lib/backend"
 import { dashboardForRole, routes } from "@/lib/site"
 import { isUserRole, ROLE_LABELS, type UserRole } from "@/lib/roles"
 
@@ -43,7 +43,7 @@ async function ManageUsersContent() {
   try {
     const response = await backendFetch("/users", {
       method: "GET",
-      headers: { cookie: requestHeaders.get("cookie") ?? "" },
+      headers: { ...backendAuthHeader(session.session.token) },
     })
 
     if (!response.ok) {

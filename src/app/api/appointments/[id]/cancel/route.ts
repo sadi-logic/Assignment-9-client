@@ -1,5 +1,5 @@
 import { auth } from "@/lib/auth"
-import { BACKEND_UNAVAILABLE_MESSAGE, backendFetch } from "@/lib/backend"
+import { BACKEND_UNAVAILABLE_MESSAGE, backendAuthHeader, backendFetch } from "@/lib/backend"
 
 /**
  * Cancels one appointment. The browser never chooses its owner. The Better
@@ -45,7 +45,7 @@ export async function PATCH(
     response = await backendFetch(`/appointments/${id}/cancel`, {
       method: "PATCH",
       headers: {
-        cookie: request.headers.get("cookie") ?? "",
+        ...backendAuthHeader(session.session.token),
       },
     })
   } catch (error) {

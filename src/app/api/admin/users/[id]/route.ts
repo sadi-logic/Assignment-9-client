@@ -1,4 +1,4 @@
-import { backendFetch } from "@/lib/backend"
+import { backendAuthHeader, backendFetch } from "@/lib/backend"
 import { requireAdminSession } from "@/lib/admin-guard"
 
 export async function PATCH(
@@ -29,7 +29,7 @@ export async function PATCH(
       method: "PATCH",
       headers: {
         "content-type": "application/json",
-        cookie: request.headers.get("cookie") ?? "",
+        ...backendAuthHeader(access.session.session.token),
       },
       body: JSON.stringify({ isBlocked: body.isBlocked }),
     })

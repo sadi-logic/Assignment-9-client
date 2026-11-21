@@ -19,7 +19,7 @@ import {
   type AppointmentRow,
 } from "@/lib/appointments"
 import { auth } from "@/lib/auth"
-import { BACKEND_UNAVAILABLE_MESSAGE, backendFetch } from "@/lib/backend"
+import { BACKEND_UNAVAILABLE_MESSAGE, backendAuthHeader, backendFetch } from "@/lib/backend"
 import { dashboardForRole, routes, signInHref } from "@/lib/site"
 import { formatServicePrice, parseServiceList } from "@/lib/services"
 
@@ -64,7 +64,7 @@ async function CheckoutContent({
     const [appointmentsResponse, servicesResponse] = await Promise.all([
       backendFetch("/appointments", {
         method: "GET",
-        headers: { cookie: requestHeaders.get("cookie") ?? "" },
+        headers: { ...backendAuthHeader(session.session.token) },
       }),
       backendFetch("/services", { method: "GET" }),
     ])

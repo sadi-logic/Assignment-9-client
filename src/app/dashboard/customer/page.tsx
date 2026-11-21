@@ -16,7 +16,7 @@ import {
   parseAppointmentList,
 } from "@/lib/appointments"
 import { auth } from "@/lib/auth"
-import { BACKEND_UNAVAILABLE_MESSAGE, backendFetch } from "@/lib/backend"
+import { BACKEND_UNAVAILABLE_MESSAGE, backendAuthHeader, backendFetch } from "@/lib/backend"
 import { dashboardForRole, routes } from "@/lib/site"
 
 export default function CustomerDashboardPage() {
@@ -37,7 +37,7 @@ async function CustomerDashboardContent() {
   if (session.user.isBlocked) redirect(routes.home)
 
   const { counts, error } = await getCustomerDashboardCounts(
-    (await headers()).get("cookie") ?? ""
+    session.session.token
   )
 
   return (
@@ -108,11 +108,11 @@ async function CustomerDashboardContent() {
   )
 }
 
-async function getCustomerDashboardCounts(cookie: string) {
+async function getCustomerDashboardCounts(token: string) {
   try {
     const response = await backendFetch("/appointments", {
       method: "GET",
-      headers: { cookie },
+      headers: { ...backendAuthHeader(token) },
     })
 
     if (!response.ok) {

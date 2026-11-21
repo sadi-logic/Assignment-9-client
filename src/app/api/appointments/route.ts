@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth"
 import { parseAppointmentSubmission } from "@/lib/appointments"
-import { BACKEND_UNAVAILABLE_MESSAGE, backendFetch } from "@/lib/backend"
+import { BACKEND_UNAVAILABLE_MESSAGE, backendAuthHeader, backendFetch } from "@/lib/backend"
 import { parseServiceList } from "@/lib/services"
 
 export async function POST(request: Request) {
@@ -47,9 +47,7 @@ export async function POST(request: Request) {
 
   let serviceResponse: Response
   try {
-    serviceResponse = await backendFetch("/services", { method: "GET", headers: {
-        cookie: request.headers.get("cookie") ?? "",
-      }, })
+    serviceResponse = await backendFetch("/services", { method: "GET" })
   } catch (error) {
     return Response.json(
       {
@@ -99,7 +97,10 @@ export async function POST(request: Request) {
   try {
     appointmentResponse = await backendFetch("/appointments", {
       method: "POST",
-      headers: { "content-type": "application/json",cookie: request.headers.get("cookie") ?? "", },
+      headers: {
+        "content-type": "application/json",
+        ...backendAuthHeader(session.session.token),
+      },
       body: JSON.stringify({
         serviceId: parsed.data.serviceId,
         customerId: session.user.id,

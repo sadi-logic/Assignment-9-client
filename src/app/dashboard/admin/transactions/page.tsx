@@ -7,7 +7,7 @@ import { ReceiptTextIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { auth } from "@/lib/auth"
-import { BACKEND_UNAVAILABLE_MESSAGE, backendFetch } from "@/lib/backend"
+import { BACKEND_UNAVAILABLE_MESSAGE, backendAuthHeader, backendFetch } from "@/lib/backend"
 import { dashboardForRole, routes } from "@/lib/site"
 import {
   formatTransactionAmount,
@@ -45,7 +45,7 @@ async function TransactionsContent() {
   try {
     const response = await backendFetch("/admin/transactions", {
       method: "GET",
-      headers: { cookie: requestHeaders.get("cookie") ?? "" },
+      headers: { ...backendAuthHeader(session.session.token) },
     })
 
     if (!response.ok) {

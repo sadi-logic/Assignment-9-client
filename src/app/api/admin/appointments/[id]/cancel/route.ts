@@ -1,5 +1,5 @@
 import { requireAdminSession } from "@/lib/admin-guard"
-import { BACKEND_UNAVAILABLE_MESSAGE, backendFetch } from "@/lib/backend"
+import { BACKEND_UNAVAILABLE_MESSAGE, backendAuthHeader, backendFetch } from "@/lib/backend"
 
 /**
  * Cancels one appointment as an admin.
@@ -23,19 +23,13 @@ export async function PATCH(
     )
   }
 
-  const cookie = request.headers.get("cookie")
-  if (!cookie) {
-    return Response.json(
-      { error: "Sign in as an administrator." },
-      { status: 401 }
-    )
-  }
-
   let response: Response
   try {
     response = await backendFetch(`/admin/appointments/${id}/cancel`, {
       method: "PATCH",
-      headers: { cookie },
+      headers: {
+        ...backendAuthHeader(guard.session.session.token),
+      },
     })
   } catch (error) {
     return Response.json(

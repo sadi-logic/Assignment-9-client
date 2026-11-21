@@ -1,5 +1,5 @@
 import { auth } from "@/lib/auth"
-import { BACKEND_UNAVAILABLE_MESSAGE, backendFetch } from "@/lib/backend"
+import { BACKEND_UNAVAILABLE_MESSAGE, backendAuthHeader, backendFetch } from "@/lib/backend"
 import { parseServiceDraft } from "@/lib/services"
 
 type InsertResult = {
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
       method: "POST",
       headers: {
         "content-type": "application/json",
-        cookie: request.headers.get("cookie") ?? "",
+        ...backendAuthHeader(session.session.token),
       },
       body: JSON.stringify(document),
     })

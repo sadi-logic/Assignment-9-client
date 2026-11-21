@@ -39,3 +39,20 @@ export async function backendFetch(
     throw new Error(BACKEND_UNAVAILABLE_MESSAGE)
   }
 }
+
+/**
+ * Authorization header for Express.
+ *
+ * Express's `verifyToken` middleware only accepts a bearer token: it looks the
+ * token up in Better Auth's `session` collection and loads the matching user.
+ * The token is taken from the session this server already verified, so the
+ * browser's cookie never has to leave Next.js.
+ *
+ * An empty object is returned when there is no token, so callers can spread the
+ * result into `headers` without a branch.
+ */
+export function backendAuthHeader(
+  token?: string | null
+): Record<string, string> {
+  return token ? { authorization: `Bearer ${token}` } : {}
+}

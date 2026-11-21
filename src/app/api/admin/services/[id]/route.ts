@@ -1,5 +1,5 @@
 import { auth } from "@/lib/auth"
-import { BACKEND_UNAVAILABLE_MESSAGE, backendFetch } from "@/lib/backend"
+import { BACKEND_UNAVAILABLE_MESSAGE, backendAuthHeader, backendFetch } from "@/lib/backend"
 import { parseServiceDraft } from "@/lib/services"
 
 /**
@@ -7,7 +7,8 @@ import { parseServiceDraft } from "@/lib/services"
  *
  * The page already hides these buttons from customers, but a request can be
  * sent by hand, so the session is checked here as well. Returns a ready-made
- * error response when access is denied, and `null` when the caller may continue.
+ * error response when access is denied, and the verified session (whose token
+ * Express will re-check) when the caller may continue.
  */
 async function checkAdmin(request: Request) {
   const session = await auth.api.getSession({ headers: request.headers })
@@ -30,7 +31,7 @@ async function checkAdmin(request: Request) {
     return Response.json({ error: "This account is blocked." }, { status: 403 })
   }
 
-  return null
+  return session
 }
 
 /** A MongoDB `_id` is a 24-character hex string. Anything else is a bad request. */
@@ -59,8 +60,8 @@ export async function PATCH(
   request: Request,
   context: RouteContext<"/api/admin/services/[id]">
 ) {
-  const denied = await checkAdmin(request)
-  if (denied) return denied
+  const access = await checkAdmin(request)
+  if (access instanceof Response) return access
 
   // In Next 16 `params` is a Promise, so it has to be awaited.
   const { id } = await context.params
@@ -92,7 +93,7 @@ export async function PATCH(
       method: "PATCH",
       headers: {
         "content-type": "application/json",
-        cookie: request.headers.get("cookie") ?? "",
+        ...backendAuthHeader(access.session.token),
       },
       body: JSON.stringify(parsed.data),
     })
@@ -123,8 +124,8 @@ export async function DELETE(
   request: Request,
   context: RouteContext<"/api/admin/services/[id]">
 ) {
-  const denied = await checkAdmin(request)
-  if (denied) return denied
+  const access = await checkAdmin(request)
+  if (access instanceof Response) return access
 
   const { id } = await context.params
 
@@ -136,7 +137,7 @@ export async function DELETE(
   try {
     response = await backendFetch(`/services/${id}`, {
       method: "DELETE",
-      headers: { cookie: request.headers.get("cookie") ?? "" },
+      headers: { ...backendAuthHeader(access.session.token) },
     })
   } catch (error) {
     return backendError(error)
