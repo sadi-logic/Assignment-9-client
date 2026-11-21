@@ -4,7 +4,9 @@ SalonBook is a full-stack salon booking platform for hair, skin, and beauty serv
 
 ## Live Website
 
-🔗 **Live Site:** https://salonbook-client-zeta.vercel.app/
+🔗 **Live Client Site:** https://salonbook-client-zeta.vercel.app/
+🔗 **Live Server Site:** https://salonbook-server-ten.vercel.app/
+
 
 ## Repository Links
 
