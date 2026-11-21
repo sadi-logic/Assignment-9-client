@@ -18,7 +18,7 @@ import {
   parseAppointmentList,
   type AppointmentRow,
 } from "@/lib/appointments"
-import { auth } from "@/lib/auth"
+import { getAuthSession } from "@/lib/auth"
 import { BACKEND_UNAVAILABLE_MESSAGE, backendAuthHeader, backendFetch } from "@/lib/backend"
 import { dashboardForRole, routes, signInHref } from "@/lib/site"
 import { formatServicePrice, parseServiceList } from "@/lib/services"
@@ -47,7 +47,7 @@ async function CheckoutContent({
   if (!/^[a-f\d]{24}$/i.test(id)) notFound()
 
   const requestHeaders = await headers()
-  const session = await auth.api.getSession({ headers: requestHeaders })
+  const session = await getAuthSession(requestHeaders)
 
   if (!session?.user) {
     redirect(signInHref(`${routes.customerAppointments}/${id}/checkout`))

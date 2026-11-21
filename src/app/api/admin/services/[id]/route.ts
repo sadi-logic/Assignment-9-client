@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth"
+import { getAuthSession } from "@/lib/auth"
 import { BACKEND_UNAVAILABLE_MESSAGE, backendAuthHeader, backendFetch } from "@/lib/backend"
 import { parseServiceDraft } from "@/lib/services"
 
@@ -11,7 +11,7 @@ import { parseServiceDraft } from "@/lib/services"
  * Express will re-check) when the caller may continue.
  */
 async function checkAdmin(request: Request) {
-  const session = await auth.api.getSession({ headers: request.headers })
+  const session = await getAuthSession(request.headers)
 
   if (!session?.user) {
     return Response.json(

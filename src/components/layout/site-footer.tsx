@@ -99,7 +99,7 @@ export function SiteFooter() {
             <ul className="mt-4 grid gap-3">
               <li className="flex items-start gap-2.5 text-sm text-muted-foreground">
                 <PhoneIcon aria-hidden className="mt-0.5 size-4 shrink-0 text-brand-gold" />
-                <span>Contact details coming soon</span>
+                <span>+918320183</span>
               </li>
               <li className="flex items-start gap-2.5 text-sm text-muted-foreground">
                 <MailIcon aria-hidden className="mt-0.5 size-4 shrink-0 text-brand-gold" />

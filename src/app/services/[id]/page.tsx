@@ -17,7 +17,7 @@ import { AppointmentForm } from "@/components/services/appointment-form"
 import { ServiceDetails } from "@/components/services/service-details"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { auth } from "@/lib/auth"
+import { getAuthSession } from "@/lib/auth"
 import { BACKEND_UNAVAILABLE_MESSAGE, backendFetch } from "@/lib/backend"
 import {
   formatServicePrice,
@@ -60,7 +60,7 @@ async function ServiceDetailsContent({
   // A URL that cannot be a service id is not worth an API call.
   if (!isServiceId(id)) notFound()
 
-  const session = await auth.api.getSession({ headers: await headers() })
+  const session = await getAuthSession(await headers())
 
   if (!session?.user) {
     redirect(signInHref(serviceDetailsPath(id)))

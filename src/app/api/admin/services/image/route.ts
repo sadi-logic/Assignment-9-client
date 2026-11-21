@@ -1,5 +1,5 @@
 import { isValidImageUrl } from "@/lib/validation"
-import { auth } from "@/lib/auth"
+import { getAuthSession } from "@/lib/auth"
 import { validateServiceImageFile } from "@/lib/services"
 
 const IMGBB_ENDPOINT = "https://api.imgbb.com/1/upload"
@@ -23,7 +23,7 @@ function jsonError(message: string, status: number) {
  * form — this route is callable directly.
  */
 export async function POST(request: Request) {
-  const session = await auth.api.getSession({ headers: request.headers })
+  const session = await getAuthSession(request.headers)
 
   if (!session?.user) {
     return jsonError("Sign in to upload a service image.", 401)

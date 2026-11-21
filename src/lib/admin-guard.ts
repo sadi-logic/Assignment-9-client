@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth"
+import { getAuthSession } from "@/lib/auth"
 
 /**
  * Admin gate shared by the appointment action routes.
@@ -8,7 +8,7 @@ import { auth } from "@/lib/auth"
  * session cookie, so a crafted request still cannot act as an admin.
  */
 export async function requireAdminSession(request: Request) {
-  const session = await auth.api.getSession({ headers: request.headers })
+  const session = await getAuthSession(request.headers)
 
   if (!session?.user) {
     return {

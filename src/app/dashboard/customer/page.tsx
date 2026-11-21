@@ -15,7 +15,7 @@ import {
   countAppointments,
   parseAppointmentList,
 } from "@/lib/appointments"
-import { auth } from "@/lib/auth"
+import { getAuthSession } from "@/lib/auth"
 import { BACKEND_UNAVAILABLE_MESSAGE, backendAuthHeader, backendFetch } from "@/lib/backend"
 import { dashboardForRole, routes } from "@/lib/site"
 
@@ -28,7 +28,7 @@ export default function CustomerDashboardPage() {
 }
 
 async function CustomerDashboardContent() {
-  const session = await auth.api.getSession({ headers: await headers() })
+  const session = await getAuthSession(await headers())
 
   if (!session?.user) redirect(routes.signIn)
   if (session.user.role !== "customer") {

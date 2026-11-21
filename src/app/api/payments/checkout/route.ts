@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth"
+import { getAuthSession } from "@/lib/auth"
 import {
   BACKEND_UNAVAILABLE_MESSAGE,
   backendAuthHeader,
@@ -6,7 +6,7 @@ import {
 } from "@/lib/backend"
 
 export async function POST(request: Request) {
-  const session = await auth.api.getSession({ headers: request.headers })
+  const session = await getAuthSession(request.headers)
 
   if (!session?.user) {
     return Response.json({ error: "Sign in to pay for an appointment." }, { status: 401 })

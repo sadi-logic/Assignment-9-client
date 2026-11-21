@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth"
+import { getAuthSession } from "@/lib/auth"
 import { BACKEND_UNAVAILABLE_MESSAGE, backendAuthHeader, backendFetch } from "@/lib/backend"
 import { parseServiceDraft } from "@/lib/services"
 
@@ -16,7 +16,7 @@ type InsertResult = {
  * page uses) instead of a duplicated copy of its cookie logic.
  */
 export async function POST(request: Request) {
-  const session = await auth.api.getSession({ headers: request.headers })
+  const session = await getAuthSession(request.headers)
 
   if (!session?.user) {
     return Response.json(

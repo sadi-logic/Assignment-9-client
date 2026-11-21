@@ -20,7 +20,7 @@ import {
   parseAppointmentList,
   type AppointmentRow,
 } from "@/lib/appointments"
-import { auth } from "@/lib/auth"
+import { getAuthSession } from "@/lib/auth"
 import { BACKEND_UNAVAILABLE_MESSAGE, backendAuthHeader, backendFetch } from "@/lib/backend"
 import { parseServiceList } from "@/lib/services"
 import { dashboardForRole, routes, signInHref } from "@/lib/site"
@@ -49,7 +49,7 @@ export default function MyAppointmentsPage() {
 
 async function AppointmentsContent() {
   const requestHeaders = await headers()
-  const session = await auth.api.getSession({ headers: requestHeaders })
+  const session = await getAuthSession(requestHeaders)
 
   if (!session?.user) {
     redirect(signInHref(routes.customerAppointments))

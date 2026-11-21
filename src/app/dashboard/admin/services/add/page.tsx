@@ -6,7 +6,7 @@ import { redirect } from "next/navigation"
 import { ChevronRightIcon } from "lucide-react"
 
 import { AddServiceForm } from "@/components/dashboard/services/add-service-form"
-import { auth } from "@/lib/auth"
+import { getAuthSession } from "@/lib/auth"
 import { routes } from "@/lib/site"
 
 export const metadata: Metadata = {
@@ -32,7 +32,7 @@ export default function AddServicePage() {
 }
 
 async function AdminServicePage() {
-  const session = await auth.api.getSession({ headers: await headers() })
+  const session = await getAuthSession(await headers())
 
   if (!session?.user) {
     redirect(routes.signIn)

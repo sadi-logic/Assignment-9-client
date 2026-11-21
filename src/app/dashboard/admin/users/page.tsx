@@ -6,7 +6,7 @@ import { UsersIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { UserAccessButton } from "@/components/dashboard/admin/users/user-access-button"
-import { auth } from "@/lib/auth"
+import { getAuthSession } from "@/lib/auth"
 import { BACKEND_UNAVAILABLE_MESSAGE, backendAuthHeader, backendFetch } from "@/lib/backend"
 import { dashboardForRole, routes } from "@/lib/site"
 import { isUserRole, ROLE_LABELS, type UserRole } from "@/lib/roles"
@@ -29,7 +29,7 @@ export default function ManageUsersPage() {
 
 async function ManageUsersContent() {
   const requestHeaders = await headers()
-  const session = await auth.api.getSession({ headers: requestHeaders })
+  const session = await getAuthSession(requestHeaders)
 
   if (!session?.user) redirect(routes.signIn)
   if (session.user.role !== "admin") {

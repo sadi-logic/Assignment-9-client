@@ -120,3 +120,12 @@ export const auth = betterAuth({
     },
   },
 })
+
+export async function connectMongo() {
+  await client.connect()
+}
+
+export async function getAuthSession(headers: Headers) {
+  await connectMongo()
+  return auth.api.getSession({ headers })
+}

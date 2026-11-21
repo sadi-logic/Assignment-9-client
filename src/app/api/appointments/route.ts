@@ -1,10 +1,10 @@
-import { auth } from "@/lib/auth"
+import { getAuthSession } from "@/lib/auth"
 import { parseAppointmentSubmission } from "@/lib/appointments"
 import { BACKEND_UNAVAILABLE_MESSAGE, backendAuthHeader, backendFetch } from "@/lib/backend"
 import { parseServiceList } from "@/lib/services"
 
 export async function POST(request: Request) {
-  const session = await auth.api.getSession({ headers: request.headers })
+  const session = await getAuthSession(request.headers)
 
   if (!session?.user) {
     return Response.json(

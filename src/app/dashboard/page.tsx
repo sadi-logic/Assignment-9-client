@@ -2,7 +2,7 @@ import { Suspense } from "react"
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
 
-import { auth } from "@/lib/auth"
+import { getAuthSession } from "@/lib/auth"
 import { dashboardForRole, routes } from "@/lib/site"
 
 export default function DashboardIndexPage() {
@@ -14,7 +14,7 @@ export default function DashboardIndexPage() {
 }
 
 async function RedirectToRoleDashboard() {
-  const session = await auth.api.getSession({ headers: await headers() })
+  const session = await getAuthSession(await headers())
 
   if (!session?.user) redirect(routes.signIn)
   if (session.user.isBlocked) redirect(routes.home)

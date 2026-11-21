@@ -13,7 +13,7 @@ import {
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { auth } from "@/lib/auth"
+import { getAuthSession } from "@/lib/auth"
 import { routes, signInHref, siteConfig } from "@/lib/site"
 import { SERVICE_CATEGORIES } from "@/lib/services"
 
@@ -37,7 +37,7 @@ export default function SalonDetailsPage() {
 
 async function SalonDetailsContent() {
   const requestHeaders = await headers()
-  const session = await auth.api.getSession({ headers: requestHeaders })
+  const session = await getAuthSession(requestHeaders)
 
   if (!session?.user) {
     redirect(signInHref(routes.salonDetails))

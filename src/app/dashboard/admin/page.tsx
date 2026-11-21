@@ -13,7 +13,7 @@ import {
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { auth } from "@/lib/auth"
+import { getAuthSession } from "@/lib/auth"
 import { BACKEND_UNAVAILABLE_MESSAGE, backendAuthHeader, backendFetch } from "@/lib/backend"
 import {
   countAppointments,
@@ -32,7 +32,7 @@ export default function AdminDashboardPage() {
 }
 
 async function AdminDashboardContent() {
-  const session = await auth.api.getSession({ headers: await headers() })
+  const session = await getAuthSession(await headers())
 
   if (!session?.user) redirect(routes.signIn)
   if (session.user.role !== "admin") {

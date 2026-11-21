@@ -4,7 +4,7 @@ import { redirect } from "next/navigation"
 import { UserRoundIcon } from "lucide-react"
 
 import { ProfileForm } from "@/components/dashboard/profile-form"
-import { auth } from "@/lib/auth"
+import { getAuthSession } from "@/lib/auth"
 import { dashboardForRole, routes } from "@/lib/site"
 import type { UserRole } from "@/lib/roles"
 
@@ -18,7 +18,7 @@ export function DashboardProfilePage({ role }: { role: UserRole }) {
 
 async function ProfileContent({ role }: { role: UserRole }) {
   const requestHeaders = await headers()
-  const session = await auth.api.getSession({ headers: requestHeaders })
+  const session = await getAuthSession(requestHeaders)
 
   if (!session?.user) redirect(routes.signIn)
   if (session.user.role !== role) {

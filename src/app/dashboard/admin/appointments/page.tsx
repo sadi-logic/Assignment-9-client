@@ -21,7 +21,7 @@ import {
   parseAdminAppointmentList,
   type AdminAppointmentRow,
 } from "@/lib/appointments"
-import { auth } from "@/lib/auth"
+import { getAuthSession } from "@/lib/auth"
 import { BACKEND_UNAVAILABLE_MESSAGE, backendAuthHeader, backendFetch } from "@/lib/backend"
 import { dashboardForRole, routes, signInHref } from "@/lib/site"
 
@@ -51,7 +51,7 @@ export default function ManageAppointmentsPage() {
 
 async function AdminAppointmentsContent() {
   const requestHeaders = await headers()
-  const session = await auth.api.getSession({ headers: requestHeaders })
+  const session = await getAuthSession(requestHeaders)
 
   if (!session?.user) {
     redirect(signInHref(routes.adminAppointments))

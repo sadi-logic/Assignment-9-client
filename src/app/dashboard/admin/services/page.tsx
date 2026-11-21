@@ -7,7 +7,7 @@ import { ChevronRightIcon, PlusIcon } from "lucide-react"
 
 import { ManageServices } from "@/components/dashboard/services/manage-services"
 import { Button } from "@/components/ui/button"
-import { auth } from "@/lib/auth"
+import { getAuthSession } from "@/lib/auth"
 import { backendFetch } from "@/lib/backend"
 import {
   toServiceRow,
@@ -38,7 +38,7 @@ export default function ManageServicesPage() {
 }
 
 async function AdminServicesContent() {
-  const session = await auth.api.getSession({ headers: await headers() })
+  const session = await getAuthSession(await headers())
 
   if (!session?.user) {
     redirect(routes.signIn)
