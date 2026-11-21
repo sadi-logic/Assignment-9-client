@@ -46,16 +46,12 @@ export function DashboardSidebar() {
   const { setOpenMobile } = useSidebar()
   const { signOut, isSigningOut } = useSignOut()
 
-  // The role comes from the Better Auth session, which the server signs — it is
-  // never read from local state or form input.
   const rawRole = session?.user?.role
   const role: UserRole | null = isUserRole(rawRole) ? rawRole : null
   const menuItems = role ? menuItemsByRole[role] : EMPTY_MENU
   const user = session?.user
 
-  // Highlight the most specific match so `/services/add` lights up
-  // "Add/Update Service" while `/services/123/edit` still shows
-  // "Manage Services" as active.
+
   const activeUrl = useMemo(() => {
     if (!pathname) return undefined
 
@@ -70,8 +66,6 @@ export function DashboardSidebar() {
   return (
     <Sidebar
       collapsible="icon"
-      // The global header is sticky above the dashboard, so the fixed desktop
-      // sidebar starts below it instead of sliding underneath the branding.
       className="top-16! h-[calc(100svh-4rem)]! border-r border-sidebar-border/70 lg:top-20! lg:h-[calc(100svh-5rem)]!"
     >
       <SidebarHeader className="gap-0 border-b border-sidebar-border/70 px-2 py-3">

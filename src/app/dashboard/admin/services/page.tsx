@@ -22,13 +22,7 @@ export const metadata: Metadata = {
     "Review the SalonBook service menu, search by name, sort by price and manage what customers can book.",
 }
 
-/**
- * Admin-only page.
- *
- * The session is read on the server, so a signed-out visitor or a customer is
- * redirected before any service markup is sent. The services themselves are
- * also fetched on the server, straight from the Express API.
- */
+
 export default function ManageServicesPage() {
   return (
     <Suspense fallback={<ManageServicesSkeleton />}>
@@ -51,8 +45,7 @@ async function AdminServicesContent() {
     redirect(routes.home)
   }
 
-  // Reading the list here means the table arrives already filled in, so the
-  // browser needs no loading state and no `useEffect`.
+ 
   let services: ServiceRow[] = []
   let loadError: string | null = null
 

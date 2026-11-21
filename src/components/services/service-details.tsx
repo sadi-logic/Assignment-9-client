@@ -5,13 +5,7 @@ import { ClockIcon, ScissorsIcon, SparklesIcon } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { formatServicePrice, type ServiceRow } from "@/lib/services"
 
-/**
- * The editorial half of the Service Details page: photo, name, description and
- * the three facts a customer checks before booking.
- *
- * It is a plain Server Component — it only renders the service object the page
- * already fetched, so it needs no state and no client JavaScript.
- */
+
 export function ServiceDetails({ service }: { service: ServiceRow }) {
   const price = formatServicePrice(service.price)
 
@@ -74,10 +68,7 @@ export function ServiceDetails({ service }: { service: ServiceRow }) {
   )
 }
 
-/**
- * One tile in the fact row. `dt`/`dd` keep the label and value connected for
- * screen readers without extra ARIA.
- */
+
 function ServiceFact({
   icon,
   label,

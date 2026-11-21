@@ -24,14 +24,7 @@ export const metadata: Metadata = {
     "Explore the SalonBook treatment menu — haircuts, colour, facials, makeup, nails and spa rituals — with clear prices and durations.",
 }
 
-/**
- * Public Browse Services page.
- *
- * The intro renders immediately; the filter bar and the cards wait inside a
- * `Suspense` boundary because they depend on `searchParams`, which is dynamic.
- * That is the pattern the installed Next.js version documents for a page that
- * reads the URL.
- */
+
 export default function BrowseServicesPage(
   props: PageProps<"/browse-services">
 ) {
@@ -48,17 +41,12 @@ export default function BrowseServicesPage(
   )
 }
 
-/**
- * The results half of the page: it reads the URL, fetches the menu, filters it
- * and renders the cards. Being async is what lets it run on the server.
- */
+
 async function ServicesSection({
   searchParams,
 }: Pick<PageProps<"/browse-services">, "searchParams">) {
   const params = await searchParams
 
-  // Anything that is not a known category or sort value is ignored, so a
-  // hand-typed URL can never break the page.
   const search = readParam(params.search).trim()
   const rawCategory = readParam(params.category)
   const category: ServiceCategoryValue = isServiceCategory(rawCategory)
@@ -71,8 +59,7 @@ async function ServicesSection({
   let loadError: string | null = null
 
   try {
-    // `backendFetch` uses `cache: "no-store"`, so a service switched to
-    // inactive disappears immediately instead of staying in a cached list.
+
     const response = await backendFetch("/services", { method: "GET" })
 
     if (!response.ok) {
@@ -83,8 +70,6 @@ async function ServicesSection({
       if (!Array.isArray(payload)) {
         loadError = "The services API returned an unexpected response."
       } else {
-        // Only active services are public. This check stays here because the
-        // API's own `?status=` filter is currently broken (see the notes).
         services = parseServiceList(payload).filter(
           (service) => service.status === "active"
         )
@@ -146,9 +131,7 @@ async function ServicesSection({
   )
 }
 
-/* -------------------------------------------------------------------------- */
-/* Static pieces of the page                                                  */
-/* -------------------------------------------------------------------------- */
+
 
 function PageIntro() {
   return (

@@ -1,7 +1,3 @@
-/**
- * Validation rules shared by the client forms and the Better Auth server
- * configuration, so both sides enforce exactly the same password policy.
- */
 export const PASSWORD_MIN_LENGTH = 6
 
 export const PASSWORD_POLICY_MESSAGE =

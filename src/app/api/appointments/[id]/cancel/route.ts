@@ -1,11 +1,7 @@
 import { getAuthSession } from "@/lib/auth"
 import { BACKEND_UNAVAILABLE_MESSAGE, backendAuthHeader, backendFetch } from "@/lib/backend"
 
-/**
- * Cancels one appointment. The browser never chooses its owner. The Better
- * Auth cookie is forwarded to Express, which verifies the customer and
- * repeats the ownership and `pending` checks.
- */
+
 export async function PATCH(
   request: Request,
   context: { params: Promise<{ id: string }> }
@@ -60,8 +56,7 @@ export async function PATCH(
     )
   }
 
-  // Express explains 404/403/409 in JSON, so pass both through unchanged. That
-  // gives the dialog a real message instead of a generic failure.
+
   if (!response.ok) {
     const payload = (await response.json().catch(() => null)) as
       | { error?: string }

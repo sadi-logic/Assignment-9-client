@@ -33,13 +33,7 @@ export const metadata: Metadata = {
     "Everything about a SalonBook treatment — what it includes, how long it takes, what it costs, and how to request an appointment.",
 }
 
-/**
- * Protected Service Details page.
- *
- * The session is checked on the server before any service data is sent, so a
- * signed-out visitor never sees the page and is sent to sign in with a link
- * back to the service they were opening.
- */
+
 export default function ServiceDetailsPage(props: PageProps<"/services/[id]">) {
   return (
     <main className="flex-1 pb-20">
@@ -57,7 +51,7 @@ async function ServiceDetailsContent({
 }: Pick<PageProps<"/services/[id]">, "params">) {
   const { id } = await params
 
-  // A URL that cannot be a service id is not worth an API call.
+
   if (!isServiceId(id)) notFound()
 
   const session = await getAuthSession(await headers())
@@ -70,9 +64,7 @@ async function ServiceDetailsContent({
   let loadError: string | null = null
 
   try {
-    // The Express API has no `GET /services/:id` yet, so the list is fetched
-    // once and the matching document is picked out of it. `no-store` keeps a
-    // service that was just paused from showing as active.
+    
     const response = await backendFetch("/services", { method: "GET" })
 
     if (!response.ok) {

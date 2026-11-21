@@ -89,12 +89,7 @@ export function isAppointmentTimeSlot(
   )
 }
 
-/**
- * The form's validation rules.
- *
- * The same checks will run again on the server when the endpoint exists, so
- * this function only keeps the UX tidy — it is never a security boundary.
- */
+
 export function validateAppointmentForm(
   values: AppointmentFormValues
 ): AppointmentFieldErrors {
@@ -178,18 +173,7 @@ export function parseAppointmentSubmission(
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/* Customer appointment list                                                  */
-/* -------------------------------------------------------------------------- */
 
-/**
- * One appointment exactly as `GET /appointments` sends it.
- *
- * Over HTTP `_id` and `serviceId` arrive as strings (MongoDB ObjectIds are
- * converted by `JSON.stringify`) and `createdAt` is an ISO date string. The
- * service itself is only a reference here, so the page joins it with the
- * service list.
- */
 export type AppointmentDocument = {
   _id: string
   serviceId?: string
@@ -203,11 +187,7 @@ export type AppointmentDocument = {
   createdAt?: string
 }
 
-/**
- * An appointment ready to render: its own fields plus the service details the
- * list shows. `servicePrice` is the price stored when the customer booked, so a
- * later price change does not rewrite history.
- */
+
 export type AppointmentRow = {
   id: string
   serviceId: string

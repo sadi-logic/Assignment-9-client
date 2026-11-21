@@ -1,8 +1,4 @@
-/**
- * The two roles SalonBook supports. The values must match what Better Auth
- * stores on `user.role` (see `additionalFields` in `src/lib/auth.ts`), because
- * they are compared against the real session — never against client input.
- */
+
 export const USER_ROLES = ["customer", "admin"] as const
 
 export type UserRole = (typeof USER_ROLES)[number]

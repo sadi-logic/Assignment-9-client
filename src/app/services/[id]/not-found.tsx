@@ -4,11 +4,7 @@ import { SearchXIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { routes } from "@/lib/site"
 
-/**
- * Shown when `/services/[id]` is not a real service id, or when the id no
- * longer exists in the menu. It is deliberately different from the error state
- * inside the page: this one means "nothing here", not "the API is down".
- */
+
 export default function ServiceNotFound() {
   return (
     <main className="flex flex-1 items-center justify-center px-4 py-20">

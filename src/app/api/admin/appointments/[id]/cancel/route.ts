@@ -1,12 +1,7 @@
 import { requireAdminSession } from "@/lib/admin-guard"
 import { BACKEND_UNAVAILABLE_MESSAGE, backendAuthHeader, backendFetch } from "@/lib/backend"
 
-/**
- * Cancels one appointment as an admin.
- *
- * Pending and confirmed appointments may be cancelled. Express enforces that
- * rule atomically, and it never touches the payment status.
- */
+
 export async function PATCH(
   request: Request,
   context: { params: Promise<{ id: string }> }

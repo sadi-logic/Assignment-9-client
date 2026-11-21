@@ -15,14 +15,7 @@ export const metadata: Metadata = {
     "Create a new treatment for the SalonBook service menu — pricing, duration, photo and availability.",
 }
 
-/**
- * Admin-only page.
- *
- * `auth.api.getSession` reads the signed session cookie on the server, so a
- * customer never receives the form markup — hiding the sidebar link is not the
- * protection. The read is wrapped in <Suspense> because Cache Components
- * requires request-time data to live inside a boundary.
- */
+
 export default function AddServicePage() {
   return (
     <Suspense fallback={<AddServicePageSkeleton />}>

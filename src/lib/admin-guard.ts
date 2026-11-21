@@ -1,12 +1,4 @@
 import { getAuthSession } from "@/lib/auth"
-
-/**
- * Admin gate shared by the appointment action routes.
- *
- * This is the first line of defence: the request is rejected here before it
- * ever reaches Express. Express repeats the same checks against the real
- * session cookie, so a crafted request still cannot act as an admin.
- */
 export async function requireAdminSession(request: Request) {
   const session = await getAuthSession(request.headers)
 

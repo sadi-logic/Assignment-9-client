@@ -8,14 +8,7 @@ import {
 
 import { DashboardSidebar } from "../components/DashboardSidebar";
 
-/**
- * Dashboard shell: role-aware sidebar on the left, content on the right.
- *
- * The site header lives in the root layout and stays sticky above this shell,
- * so the provider fills the remaining viewport instead of forcing its own
- * `min-h-svh`. `min-w-0` on the inset keeps long page content from widening the
- * sidebar column.
- */
+
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <SidebarProvider className="min-h-0 flex-1">

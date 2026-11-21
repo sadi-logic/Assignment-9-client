@@ -14,14 +14,7 @@ function jsonError(message: string, status: number) {
   return Response.json({ error: message }, { status })
 }
 
-/**
- * Hosts one service photo on ImgBB.
- *
- * The API key is read from the server environment and never leaves this
- * handler, so it cannot be scraped from the browser bundle or a network tab.
- * Admin rights are checked here rather than trusting the page that mounted the
- * form — this route is callable directly.
- */
+
 export async function POST(request: Request) {
   const session = await getAuthSession(request.headers)
 

@@ -7,14 +7,7 @@ type InsertResult = {
   insertedId?: unknown
 }
 
-/**
- * Creates a service through the Express API in `salonbook-server`.
- *
- * This route is the admin gate. The browser never talks to port 5000 directly,
- * so `POST /services` cannot be reached by a customer through this app, and the
- * session is verified with Better Auth's own server API (the same check the
- * page uses) instead of a duplicated copy of its cookie logic.
- */
+
 export async function POST(request: Request) {
   const session = await getAuthSession(request.headers)
 
@@ -55,9 +48,7 @@ export async function POST(request: Request) {
     )
   }
 
-  // The document is whitelisted by `parseServiceDraft`, so a client-supplied
-  // `createdAt` or `_id` can never reach the database. `createdAt` is stamped
-  // by the Express route, where it can be stored as a real BSON Date.
+
   const document = parsed.data
 
   let response: Response

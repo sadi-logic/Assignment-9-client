@@ -41,9 +41,6 @@ export const auth = betterAuth({
     enabled: true,
     minPasswordLength: PASSWORD_MIN_LENGTH,
   },
-
-  // Google stays disabled until both credentials exist, instead of failing
-  // every auth request with a half-configured provider.
   socialProviders:
     googleClientId && googleClientSecret
       ? {
@@ -60,9 +57,6 @@ export const auth = betterAuth({
 
   user: {
     additionalFields: {
-      // `input: false` is the security boundary: clients can never send these
-      // fields on sign up or profile update, so nobody can make themselves an
-      // admin or lift their own block. Admins are assigned server-side.
       role: {
         type: "string",
         required: false,
@@ -98,8 +92,6 @@ export const auth = betterAuth({
     session: {
       create: {
         before: async (session, ctx) => {
-          // Blocked customers must not receive a session, whichever way they
-          // try to sign in (email/password or Google).
           try {
             const user = await ctx?.context.internalAdapter.findUserById(
               session.userId
@@ -112,8 +104,7 @@ export const auth = betterAuth({
             }
           } catch (error) {
             if (error instanceof APIError) throw error
-            // A failed lookup should not lock everyone out of the platform;
-            // protected routes verify the blocked flag again.
+            
           }
         },
       },

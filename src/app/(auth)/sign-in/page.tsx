@@ -9,11 +9,7 @@ export const metadata: Metadata = {
   description: "Sign in to SalonBook to manage your appointments and payments.",
 }
 
-/**
- * The form reads the `next` query parameter with `useSearchParams`, which is
- * dynamic data — the Suspense boundary lets the auth shell prerender while the
- * form hydrates.
- */
+
 export default function SignInPage() {
   return (
     <Suspense fallback={<AuthFormFallback />}>

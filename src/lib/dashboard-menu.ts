@@ -22,11 +22,7 @@ export type MenuItem = {
   icon: LucideIcon
 }
 
-/**
- * Every dashboard menu lives here, keyed by the real Better Auth role values.
- * `Record<UserRole, MenuItem[]>` makes a missing (or misspelled) role a type
- * error, so adding a role later cannot silently produce an empty sidebar.
- */
+
 export const menuItemsByRole: Record<UserRole, MenuItem[]> = {
   customer: [
     {

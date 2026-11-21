@@ -31,14 +31,7 @@ export const metadata: Metadata = {
     "Review every SalonBook appointment request, confirm pending bookings and cancel when needed.",
 }
 
-/**
- * Admin-only page.
- *
- * The session is read on the server first, so a signed-out visitor or a
- * customer is redirected before any appointment data is fetched. Express
- * repeats the admin check against the real session cookie, so the list cannot
- * be fetched by a non-admin even by hand.
- */
+
 export default function ManageAppointmentsPage() {
   return (
     <div className="mx-auto w-full max-w-6xl">
@@ -168,10 +161,7 @@ async function AdminAppointmentsContent() {
   )
 }
 
-/**
- * Reads the protected admin list. The customer and service details arrive in
- * the same response, so there is no separate `/users` call.
- */
+
 async function getAdminAppointments(
   token: string
 ): Promise<{ appointments: AdminAppointmentRow[]; error: string | null }> {

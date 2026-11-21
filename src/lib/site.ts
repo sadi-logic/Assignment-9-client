@@ -1,7 +1,4 @@
-/**
- * Central brand + route configuration.
- * Keeping routes in one place means a future rename only touches this file.
- */
+
 export const siteConfig = {
   name: "SalonBook",
   tagline: "Hair · Skin · Beauty",
@@ -28,19 +25,12 @@ export const routes = {
   adminProfile: "/dashboard/admin/profile",
 } as const;
 
-/**
- * The dashboard a signed-in user belongs in. The role comes from the Better
- * Auth session (server-verified), never from anything the user can edit in the
- * browser.
- */
+
 export function dashboardForRole(role?: string | null) {
   return role === "admin" ? routes.adminDashboard : routes.customerDashboard
 }
 
-/**
- * Public details route for one service. The page itself is built in a later
- * task; this keeps the link target in one place.
- */
+
 export function serviceDetailsPath(id: string) {
   return `/services/${id}`
 }
@@ -49,12 +39,7 @@ export function appointmentCheckoutPath(appointmentId: string) {
   return `${routes.customerAppointments}/${encodeURIComponent(appointmentId)}/checkout`
 }
 
-/**
- * Only same-site paths are allowed as a post-sign-in destination.
- *
- * Returning `null` for anything else (full URLs, `//evil.example`, auth pages)
- * is what stops `?next=` from becoming an open redirect.
- */
+
 export function safeReturnPath(value?: string | null) {
   if (!value) return null
   if (!value.startsWith("/") || value.startsWith("//")) return null
@@ -79,13 +64,7 @@ export function signUpHref(nextPath?: string | null) {
   return authHref(routes.signUp, nextPath)
 }
 
-/**
- * Builds a `/browse-services` URL from the current filters.
- *
- * Empty values are left out, so an untouched page is simply
- * `/browse-services` and a filtered one is short and shareable, e.g.
- * `/browse-services?search=hair&category=Makeup&sort=price-asc`.
- */
+
 export function browseServicesHref(filters: {
   search?: string
   category?: string

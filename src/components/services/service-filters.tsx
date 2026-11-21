@@ -22,23 +22,15 @@ import {
 import { browseServicesHref, routes } from "@/lib/site"
 
 type ServiceFiltersProps = {
-  /** The filters currently applied, read from the URL by the page. */
   search: string
   category: ServiceCategoryValue
   sort: ServiceSort
 }
 
-/** Shared look for the two native selects, so they match the search input. */
+
 const SELECT_CLASS =
   "h-11 w-full appearance-none rounded-lg border border-input bg-transparent px-3 pr-9 text-sm text-foreground transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
 
-/**
- * Search, category and price sorting in one plain GET form.
- *
- * Without JavaScript the form still works: it submits `search`, `category` and
- * `sort` to the page as query parameters. With JavaScript we intercept the
- * submit and build the same URL, which keeps it short by dropping empty values.
- */
 export function ServiceFilters({ search, category, sort }: ServiceFiltersProps) {
   const router = useRouter()
   const hasFilters = search !== "" || category !== "" || sort !== "default"
@@ -61,8 +53,6 @@ export function ServiceFilters({ search, category, sort }: ServiceFiltersProps) 
 
   return (
     <form
-      // A new set of filters means new props, so re-mounting keeps the inputs
-      // showing exactly what the URL says (important for "Clear filters").
       key={`${search}|${category}|${sort}`}
       action={routes.services}
       method="get"

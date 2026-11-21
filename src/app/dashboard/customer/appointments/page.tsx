@@ -31,12 +31,7 @@ export const metadata: Metadata = {
     "Review every SalonBook appointment request, check its status and manage your bookings.",
 }
 
-/**
- * Customer-only page.
- *
- * The session is read on the server first, then its cookie is forwarded to
- * Express so the API can verify the same customer before returning bookings.
- */
+
 export default function MyAppointmentsPage() {
   return (
     <div className="mx-auto w-full max-w-6xl">
@@ -55,7 +50,6 @@ async function AppointmentsContent() {
     redirect(signInHref(routes.customerAppointments))
   }
 
-  // Admins have their own dashboard; they must not see a customer's bookings.
   if (session.user.role !== "customer") {
     redirect(dashboardForRole(session.user.role))
   }
@@ -156,10 +150,7 @@ async function AppointmentsContent() {
   )
 }
 
-/**
- * Reads the appointments and the service menu in parallel, then joins them.
- * Any failure becomes a readable message — never a made-up appointment.
- */
+
 async function getCustomerAppointments(
   token: string
 ): Promise<{ appointments: AppointmentRow[]; error: string | null }> {

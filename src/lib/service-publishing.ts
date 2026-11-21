@@ -7,12 +7,7 @@ import {
 
 export type PublishServiceResult = { id: string | null; draft: ServiceDraft }
 
-/**
- * A failure the form can render field by field.
- *
- * `fieldErrors` is only present when the server rejected specific inputs, so
- * the form can show the messages inline instead of a single banner.
- */
+
 export class ServicePublishError extends Error {
   readonly fieldErrors?: ServiceFieldErrors
 
@@ -27,8 +22,7 @@ type ErrorBody = { error?: string; errors?: ServiceFieldErrors }
 
 async function readErrorBody(response: Response): Promise<ErrorBody | null> {
   try {
-    // Read as text first: a non-JSON error page (proxy, gateway) must not throw
-    // away the status the caller already knows about.
+  
     const raw = await response.text()
     return JSON.parse(raw) as ErrorBody
   } catch {
@@ -36,13 +30,7 @@ async function readErrorBody(response: Response): Promise<ErrorBody | null> {
   }
 }
 
-/**
- * Uploads the photo, then creates the service.
- *
- * Both calls go to same-origin route handlers, which verify the admin session
- * server-side and hold the ImgBB key. The Express API is never called from the
- * browser, so nothing here needs CORS or a public API key.
- */
+
 export async function publishService(
   values: ServiceFormValues,
   imageFile: File

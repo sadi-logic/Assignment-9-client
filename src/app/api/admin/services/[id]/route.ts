@@ -2,14 +2,7 @@ import { getAuthSession } from "@/lib/auth"
 import { BACKEND_UNAVAILABLE_MESSAGE, backendAuthHeader, backendFetch } from "@/lib/backend"
 import { parseServiceDraft } from "@/lib/services"
 
-/**
- * Admin gate shared by the handlers below.
- *
- * The page already hides these buttons from customers, but a request can be
- * sent by hand, so the session is checked here as well. Returns a ready-made
- * error response when access is denied, and the verified session (whose token
- * Express will re-check) when the caller may continue.
- */
+
 async function checkAdmin(request: Request) {
   const session = await getAuthSession(request.headers)
 
@@ -34,12 +27,10 @@ async function checkAdmin(request: Request) {
   return session
 }
 
-/** A MongoDB `_id` is a 24-character hex string. Anything else is a bad request. */
 function isServiceId(value: string) {
   return /^[a-f0-9]{24}$/i.test(value)
 }
 
-/** One place that turns "the backend could not be reached" into a 502. */
 function backendError(error: unknown) {
   return Response.json(
     {
@@ -52,10 +43,7 @@ function backendError(error: unknown) {
   )
 }
 
-/**
- * Updates one service: the full row from the edit dialog, or the same row with
- * only `status` flipped when the admin activates/deactivates it.
- */
+
 export async function PATCH(
   request: Request,
   context: RouteContext<"/api/admin/services/[id]">
@@ -77,8 +65,7 @@ export async function PATCH(
     return Response.json({ error: "Send the service as JSON." }, { status: 400 })
   }
 
-  // The whole row is sent, so the same rules as the Add Service form apply.
-  // This also drops `id` and `createdAt`, which the database must not receive.
+
   const parsed = parseServiceDraft(body)
   if (!parsed.ok) {
     return Response.json(
@@ -101,7 +88,6 @@ export async function PATCH(
     return backendError(error)
   }
 
-  // The Express 404 is plain text, so this status is checked before any parsing.
   if (response.status === 404) {
     return Response.json(
       { error: "That service no longer exists." },
@@ -119,7 +105,6 @@ export async function PATCH(
   return Response.json({ ok: true })
 }
 
-/** Removes one service. The confirmation dialog is the only thing before this. */
 export async function DELETE(
   request: Request,
   context: RouteContext<"/api/admin/services/[id]">

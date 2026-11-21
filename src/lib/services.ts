@@ -1,10 +1,3 @@
-/**
- * SalonBook service domain.
- *
- * Everything the Add / Update Service form needs — categories, currency, image
- * rules, validation and the shape of a `services` document — lives here so the
- * form component stays purely presentational.
- */
 
 import { isValidImageUrl } from "@/lib/validation"
 
@@ -28,19 +21,13 @@ export type ServiceStatus = "active" | "inactive"
 
 export const SERVICE_STATUS_DEFAULT: ServiceStatus = "active"
 
-/**
- * SalonBook prices are stored as plain numbers in BDT. The symbol lives here so
- * the whole app switches currency by editing one line.
- */
+
 export const SERVICE_CURRENCY = {
   code: "BDT",
   symbol: "৳",
 } as const
 
-/**
- * The price orderings the Browse Services page offers. `default` means "the
- * order the API returned", which is the order services were added.
- */
+
 export const SERVICE_SORT_OPTIONS = [
   { value: "default", label: "Default order" },
   { value: "price-asc", label: "Price: Low to High" },
@@ -49,10 +36,7 @@ export const SERVICE_SORT_OPTIONS = [
 
 export type ServiceSort = (typeof SERVICE_SORT_OPTIONS)[number]["value"]
 
-/**
- * The `services` collection document, exactly as specified by the assignment.
- * `createdAt` is assigned by the server, never collected from the form.
- */
+
 export interface IService {
   serviceName: string
   category: string
@@ -64,15 +48,9 @@ export interface IService {
   createdAt?: Date
 }
 
-/** The submitted object: a document without the server-owned timestamp. */
 export type ServiceDraft = Omit<IService, "createdAt">
 
-/**
- * A service document exactly as `GET /services` sends it.
- *
- * Over HTTP every value arrives as text or a number, so `_id` is a string and
- * `createdAt` is an ISO date string instead of a `Date`.
- */
+
 export type ServiceDocument = {
   _id: string
   serviceName?: string
@@ -85,21 +63,13 @@ export type ServiceDocument = {
   createdAt?: string
 }
 
-/**
- * A service as the Manage Services page holds it: the same fields plus a plain
- * string `id` to use as the React key and in `/api/admin/services/${id}`.
- */
+
 export type ServiceRow = Omit<IService, "createdAt"> & {
   id: string
   createdAt?: string
 }
 
-/**
- * Turns one document from the API into a row the table can render.
- *
- * The fallbacks are only here so a half-filled document cannot break the page;
- * normal services always have every field.
- */
+
 export function toServiceRow(document: ServiceDocument): ServiceRow {
   return {
     id: String(document._id),
@@ -113,11 +83,7 @@ export function toServiceRow(document: ServiceDocument): ServiceRow {
   }
 }
 
-/**
- * True when a value from the API looks like a service we can actually render.
- * A row without an `_id` or a name would produce a broken card and a broken
- * link, so it is skipped instead of shown half-empty.
- */
+
 export function isServiceDocument(value: unknown): value is ServiceDocument {
   if (typeof value !== "object" || value === null) return false
 
@@ -149,20 +115,13 @@ export function isServiceSort(value: unknown): value is ServiceSort {
 }
 
 export type ServiceFilters = {
-  /** Searched against the service name only, ignoring case. */
   search: string
-  /** A category from `SERVICE_CATEGORIES`, or "" for all categories. */
+ 
   category: string
   sort: ServiceSort
 }
 
-/**
- * Applies the Browse Services filters to an already-loaded list.
- *
- * The menu is small (one salon, a few dozen services), so all three filters run
- * here in one pass instead of asking the API for every combination. When the
- * catalogue grows, this is the function to move into the Express query.
- */
+
 export function filterServices(
   services: ServiceRow[],
   filters: ServiceFilters
@@ -198,11 +157,7 @@ export type ServiceFormValues = {
   status: ServiceStatus
 }
 
-/**
- * `form` carries problems that belong to the whole request rather than one
- * input (malformed body, unreachable API), so a server response can be mapped
- * straight onto the form without inventing a second error shape.
- */
+
 export type ServiceFieldErrors = Partial<
   Record<keyof ServiceFormValues | "image" | "form", string>
 >
@@ -216,9 +171,6 @@ export const SERVICE_LIMITS = {
   durationMax: 1440,
 } as const
 
-/* -------------------------------------------------------------------------- */
-/* Service image                                                              */
-/* -------------------------------------------------------------------------- */
 
 export const SERVICE_IMAGE_MAX_MB = 5
 export const SERVICE_IMAGE_MAX_BYTES = SERVICE_IMAGE_MAX_MB * 1024 * 1024
@@ -261,9 +213,7 @@ export function formatFileSize(bytes: number): string {
   return `${(kilobytes / 1024).toFixed(1)} MB`
 }
 
-/* -------------------------------------------------------------------------- */
-/* Form defaults, validation and payload                                      */
-/* -------------------------------------------------------------------------- */
+
 
 export function createEmptyServiceForm(): ServiceFormValues {
   return {
@@ -283,10 +233,7 @@ export function isServiceCategory(value: unknown): value is ServiceCategory {
   )
 }
 
-/**
- * Single source of truth for the form's rules. Returns one message per invalid
- * field and an empty object when everything is acceptable.
- */
+
 export function validateServiceForm(
   values: ServiceFormValues,
   imageFile: File | null
@@ -357,11 +304,7 @@ export function hasServiceFormErrors(errors: ServiceFieldErrors): boolean {
   return Object.values(errors).some(Boolean)
 }
 
-/**
- * Converts validated form values into the exact `services` document the API
- * should receive. `imageUrl` is the hosted URL returned by the upload step, so
- * a `blob:` preview URL can never be persisted by accident.
- */
+
 export function toServicePayload(
   values: ServiceFormValues,
   imageUrl: string
@@ -396,9 +339,7 @@ export function toServicePayload(
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/* Server-side validation                                                     */
-/* -------------------------------------------------------------------------- */
+
 
 export type ServiceDraftParseResult =
   | { ok: true; data: ServiceDraft }
@@ -409,13 +350,6 @@ function readString(source: Record<string, unknown>, key: string): string {
   return typeof value === "string" ? value.trim() : ""
 }
 
-/**
- * Validates a `services` document that arrived over HTTP.
- *
- * The route handler calls this instead of trusting the browser: a request can
- * be crafted by hand, so every rule the form applies is applied again here, and
- * only the whitelisted fields below survive into the database.
- */
 export function parseServiceDraft(input: unknown): ServiceDraftParseResult {
   if (typeof input !== "object" || input === null || Array.isArray(input)) {
     return {
