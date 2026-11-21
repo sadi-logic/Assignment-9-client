@@ -18,7 +18,13 @@ if (!mongoUri) {
   )
 }
 
-const client = new MongoClient(mongoUri)
+const globalForMongo = globalThis as typeof globalThis & {
+  salonBookMongoClient?: MongoClient
+}
+const client =
+  globalForMongo.salonBookMongoClient ??
+  new MongoClient(mongoUri, { maxPoolSize: 10 })
+globalForMongo.salonBookMongoClient = client
 // Keep the database explicit: an Atlas URI usually carries no database path,
 // and `client.db()` would then silently use a database named "test".
 const dbName = process.env.MONGODB_DB_NAME?.trim() || "salonbookdb"
