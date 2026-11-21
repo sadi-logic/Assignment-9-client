@@ -103,6 +103,28 @@ export function MobileNav({ user, isPending }: MobileNavProps) {
                 </li>
               )
             })}
+            {user ? (
+              <li>
+                <Link
+                  href={routes.salonDetails}
+                  onClick={close}
+                  aria-current={
+                    isActivePath(pathname, routes.salonDetails) ? "page" : undefined
+                  }
+                  className="group flex items-center justify-between border-b border-border/60 py-4 outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  <span className="flex items-baseline gap-3">
+                    <span className="text-[0.6rem] tracking-[0.3em] text-muted-foreground">
+                      {String(publicNav.length + 1).padStart(2, "0")}
+                    </span>
+                    <span className="font-display text-2xl leading-none text-foreground">
+                      Salon Details
+                    </span>
+                  </span>
+                  <ArrowUpRightIcon className="size-4 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+                </Link>
+              </li>
+            ) : null}
           </ul>
         </nav>
 

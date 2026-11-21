@@ -43,6 +43,12 @@ export function SiteHeader() {
           {publicNav.map((item) => (
             <NavLink key={item.href} href={item.href} label={item.label} />
           ))}
+          {user ? (
+            <NavLink
+              href={routes.salonDetails}
+              label="Salon Details"
+            />
+          ) : null}
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">

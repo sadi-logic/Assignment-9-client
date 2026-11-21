@@ -12,6 +12,7 @@ export const siteConfig = {
 export const routes = {
   home: "/",
   services: "/browse-services",
+  salonDetails: "/salon-details",
   signIn: "/sign-in",
   signUp: "/sign-up",
   dashboard: "/dashboard",
